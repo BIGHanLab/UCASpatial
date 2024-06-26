@@ -14,7 +14,40 @@ source('/data/xy/UCASpatial_v1.R')
 * Seurat version >= 3.1.4
 * Rcpp >= 0.5.6
 ## How to use UCASpatial
-See 'Reproduction'
+See 'Reproduction' for the reproduction of the main figures of the paper.
+To briefly use UCASpatial :
+```
+source('/data/xy/UCASpatial_v1.R')
+
+# Load the spatial transcriptomics data and the referenced scRNA/snRNA-seq data
+st_vis <- readRDS('/datapath/ST_data.rds')
+sc_ref <- readRDS('/datapath/SC_data.rds') # cluster info in 'sc.ref$clust_vr'
+
+# Run UCASpatial to map cell subpopulations to spatial locations
+UCASpatial_result <- UCASpatial_deconv(
+      sc_ref = sc_ref,
+      st_vis = st_vis,
+      clust_vr = clust_vr)
+
+# Visualization
+decon_matr <- as.matrix(UCASpatial_result[[2]])[,-1]
+decon_matr <- decon_matr/rowSums(decon_matr)
+rownames(decon_matr) <- colnames(st_vis)
+decon_df <- decon_matr %>%
+      data.frame() %>%
+      tibble::rownames_to_column("barcodes")
+st_vis@meta.data <- st_vis@meta.data %>%
+      tibble::rownames_to_column("barcodes") %>%
+      dplyr::left_join(decon_df, by = "barcodes") %>%
+      tibble::column_to_rownames("barcodes")
+Annotation_assay <- CreateAssayObject(t(decon_matr))
+st_vis@assays$Annotation <- Annotation_assay
+cell_types_all <- colnames(decon_matr)
+Seurat::SpatialFeaturePlot(
+      object = st_vis,
+      features = cell_types_all,stroke = NA,alpha = c(0.3,1),
+      min.cutoff = 0.03)
+```
 
 ## Issues
 All feedback, bug reports, and suggestions are warmly welcomed! Please make sure to raise issues with a detailed and reproducible example and also please provide the output of your sessionInfo() in R!
