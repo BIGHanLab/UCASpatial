@@ -10,8 +10,8 @@ You can install the released version of UCASpatial from GitHub by download the '
 source('/data/xy/UCASpatial_v1.R')
 ```
 ## Dependencies
-* R version >= 3.6.1
-* Seurat version >= 3.1.4
+* R >= 3.6.1
+* Seurat >= 3.1.4
 * Rcpp >= 0.5.6
 ## How to use UCASpatial
 See 'Reproduction' for the reproduction of the main figures of the paper.
