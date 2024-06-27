@@ -7,7 +7,7 @@ Here, we introduce an ultra-resolution ST deconvolution algorithm (UCASpatial) t
 ## Installation
 You can install the released version of UCASpatial from GitHub by download the 'UCASpatial_v1.R', and then source it in Rstudio on your own working direction.
 ```R
-source('/data/xy/UCASpatial_v1.R')
+source('/DataPath/UCASpatial_v1.R')
 ```
 ## Dependencies
 * R >= 3.6.1
