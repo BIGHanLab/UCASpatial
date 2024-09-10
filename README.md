@@ -12,7 +12,7 @@ source('/DataPath/UCASpatial_v1.R')
 ## Dependencies
 * R >= 3.6.1
 * Seurat >= 3.1.4
-* Rcpp >= 0.5.6
+* RcppML >= 0.5.6
 ## How to use UCASpatial
 See 'Reproduction' for the reproduction of the main figures of the paper.
 To briefly use UCASpatial :
