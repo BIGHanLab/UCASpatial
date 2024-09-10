@@ -30,7 +30,7 @@ UCASpatial_result <- UCASpatial_deconv(
       clust_vr = clust_vr)
 
 # Visualization
-decon_matr <- as.matrix(UCASpatial_result[[2]])[,-1]
+decon_matr <- as.matrix(UCASpatial_result[[2]])[,1:(ncol(UCASpatial_result[[2]])-1)]
 decon_matr <- decon_matr/rowSums(decon_matr)
 rownames(decon_matr) <- colnames(st_vis)
 decon_df <- decon_matr %>%
