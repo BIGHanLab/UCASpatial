@@ -29,6 +29,10 @@ UCASpatial_result <- UCASpatial_deconv(
       st_vis = st_vis,
       clust_vr = clust_vr)
 
+# Evaluation
+p <- dot_plot_profiles_fun(UCASpatial_result[[1]][[1]]@h,UCASpatial_result[[1]][[2]])[2]
+p
+
 # Visualization
 decon_matr <- as.matrix(UCASpatial_result[[2]])[,1:(ncol(UCASpatial_result[[2]])-1)]
 decon_matr <- decon_matr/rowSums(decon_matr)
