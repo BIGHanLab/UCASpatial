@@ -19,24 +19,34 @@ source('/DataPath/UCASpatial_v1.R')
 * RcppML >= 0.5.6
 ## How to use UCASpatial
 See 'Reproduction' for the reproduction of the main figures of the paper.
-To briefly use UCASpatial :
+To briefly use UCASpatial, first need to load the spatial transcriptomics data and the referenced scRNA/snRNA-seq data:
 ```R
-source('/data/xy/UCASpatial_v1.R')
-
-# Load the spatial transcriptomics data and the referenced scRNA/snRNA-seq data
 st_vis <- readRDS('/datapath/ST_data.rds')
 sc_ref <- readRDS('/datapath/SC_data.rds') # cluster info in 'sc.ref$clust_vr'
-
-# Run UCASpatial to map cell subpopulations to spatial locations
+```
+Run UCASpatial to map cell subpopulations to spatial locations
+```R
 UCASpatial_result <- UCASpatial_deconv(
       sc_ref = sc_ref,
       st_vis = st_vis,
       clust_vr = clust_vr)
+```
+UCASpatial also support the analysis on 10X Visium HD datasets:
+```R
+# Run UCASpatial for 10X HD data
+UCASpatial_result <- UCASpatial_HD_deconv(
+      sc_ref = sc_ref,
+      st_vis = st_vis,
+      spatial.assay='Spatial.008um',
+      clust_vr = clust_vr)
+```
 
+```R
 # Evaluation
 p <- dot_plot_profiles_fun(UCASpatial_result[[1]][[1]]@h,UCASpatial_result[[1]][[2]])[2]
 p
-
+```
+```R
 # Visualization
 decon_matr <- as.matrix(UCASpatial_result[[2]])[,1:(ncol(UCASpatial_result[[2]])-1)]
 decon_matr <- decon_matr/rowSums(decon_matr)
