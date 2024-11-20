@@ -367,12 +367,12 @@ train_nsnmfmod <- function(sc_ref,st_vis_matr,cluster_markers,clust_vr,n_top = N
   sc_ref_matr <- as.matrix(Seurat::GetAssayData(sc_ref, assay = assay,
                                             slot = slot))
   # fliter the genes with no expression in sc_ref and st_vis data
-  sc_noexp_gene <- which(!rowSums(sc_ref_matr == 0) == ncol(sc_ref_matr))
+  sc_noexp_gene <- which(!base::rowSums(sc_ref_matr == 0) == ncol(sc_ref_matr))
   sc_ref <- sc_ref[sc_noexp_gene, ]
 
-  # st_noexp_gene <- which(!rowSums(as.matrix(st_vis_matr) ==
+  # st_noexp_gene <- which(!base::rowSums(as.matrix(st_vis_matr) ==
   #                                0) == ncol(st_vis_matr))
-  st_noexp_gene <- which(rowSums(st_vis_matr != 0) >= 1)
+  st_noexp_gene <- which(base::rowSums(st_vis_matr != 0) >= 1)
   st_vis_matr <- st_vis_matr[st_noexp_gene, ]
 
   st_genes <- rownames(st_vis_matr)
@@ -428,7 +428,7 @@ predict_spatial_mixtures_nmf_weighted <- function (nmf_mod, cluster_markers, mix
                           scale = apply(mixture_transcriptome_subs, 1, sd,
                                         na.rm = TRUE))
       count_matr <- t(count_matr)
-      pos_0 <- which(rowSums(is.na(count_matr)) == ncol(count_matr))
+      pos_0 <- which(base::rowSums(is.na(count_matr)) == ncol(count_matr))
       count_matr[pos_0, ] <- 0
     }
     else if (normalize == "raw") {
@@ -550,7 +550,7 @@ CalculateEntropy <- function(object,features,assay = "RNA",slot = "data",unit = 
   for(cells.t in levels(Idents(object)))
   {
     cells.t.name <- WhichCells(object,idents = cells.t)
-    pct.1 <- round(x = rowSums(x = as.matrix(data.use[features, cells.t.name, drop = FALSE] > thresh.min)) / length(x = cells.t.name),
+    pct.1 <- round(x = base::rowSums(x = as.matrix(data.use[features, cells.t.name, drop = FALSE] > thresh.min)) / length(x = cells.t.name),
                    digits = 3)
     pct<- cbind(pct,pct.1)
     tot = tot + 1
@@ -563,7 +563,7 @@ CalculateEntropy <- function(object,features,assay = "RNA",slot = "data",unit = 
   pct.data <- pct.uq[, 1:length(levels(Idents(object))) + 1]
 
   colnames(pct.data) <- levels(Idents(object))
-  ent.data <- pct.data/rowSums(pct.data)
+  ent.data <- pct.data/base::rowSums(pct.data)
   colnames(ent.data) <- levels(Idents(object))
 
   # 03.1 filter the cluster corresponding to gene which has the max pct*log2(avg_logFC+1)
