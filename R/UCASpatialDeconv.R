@@ -359,10 +359,10 @@ train_nsnmfmod <- function(sc_ref,st_vis_matr,cluster_markers,clust_vr,n_top = N
   sc_ref_matr <- as.matrix(Seurat::GetAssayData(sc_ref, assay = assay,
                                                 slot = slot))
   # fliter the genes with no expression in sc_ref and st_vis data
-  sc_noexp_gene <- which(!rowSums(sc_ref_matr == 0) == ncol(sc_ref_matr))
+  sc_noexp_gene <- which(!base::rowSums(sc_ref_matr == 0) == ncol(sc_ref_matr))
   sc_ref <- sc_ref[sc_noexp_gene, ]
 
-  st_noexp_gene <- which(!rowSums(as.matrix(st_vis_matr) ==
+  st_noexp_gene <- which(!base::rowSums(as.matrix(st_vis_matr) ==
                                     0) == ncol(st_vis_matr))
   st_vis_matr <- st_vis_matr[st_noexp_gene, ]
 
@@ -422,7 +422,7 @@ predict_spatial_mixtures_nmf_weighted <- function (nmf_mod, cluster_markers, mix
                           scale = apply(mixture_transcriptome_subs, 1, sd,
                                         na.rm = TRUE))
       count_matr <- t(count_matr)
-      pos_0 <- which(rowSums(is.na(count_matr)) == ncol(count_matr))
+      pos_0 <- which(base::rowSums(is.na(count_matr)) == ncol(count_matr))
       count_matr[pos_0, ] <- 0
     }
     else if (normalize == "raw") {
