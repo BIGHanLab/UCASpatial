@@ -24,7 +24,7 @@ new_simulate <- function(sc_ref,clust_vr,n = 1000,verbose = TRUE,max.celltype = 
   if (!is.character(clust_vr)) stop("ERROR: clust_vr must be a character string!")
   if (!is.numeric(n)) stop("ERROR: n must be an integer!")
   if (!is.numeric(n.celltype)) stop("ERROR: n.celltype must be an integer!")
-  if (!is.numeric(n.cell)) stop("ERROR: n.cell must be an integer!")
+  # if (!is.numeric(n.cell)) stop("ERROR: n.cell must be an integer!")
   if (!is.logical(verbose)) stop("ERROR: verbose must be a logical object!")
 
   suppressMessages(require(DropletUtils)) # For the downsampling
