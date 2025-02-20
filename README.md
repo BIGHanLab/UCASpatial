@@ -4,7 +4,7 @@
 
 Here, we introduce an ultra-resolution ST deconvolution algorithm (UCASpatial) that improves the resolution of mapping cell subpopulations to spatial locations by leveraging the contribution of genes indicative of cell identity through entropy-based weighting. Using both in silico and real ST datasets, we demonstrate that UCASpatial improves the robustness and accuracy in identifying low-abundant cell subpopulations and distinguishing transcriptionally heterogeneous cell subpopulations. 
 
-## Installation
+## Installation (R)
 You can install the released version of UCASpatial from GitHub by:
 ```R
 devtools::install_github('https://github.com/BIGHanLab/UCASpatial/')
@@ -65,6 +65,36 @@ Seurat::SpatialFeaturePlot(
       object = st_vis,
       features = cell_types_all,stroke = NA,alpha = c(0.3,1),
       min.cutoff = 0.03)
+```
+## UCASpatial for python
+The core functionality of UCASpatial is already available in Python.
+You can utilize the released version of UCASpatial for Python from GitHub by downloading 'UCASpatial_python_v1.0.py' and importing it. Application examples can be found under the Python path of the current GitHub repository.
+
+For using UCASpatial in Python:
+```python
+import UCASpatial_python_v1.0
+
+# Load the data
+sc_ref = sc.read("your sc_ref path/sc.h5ad")
+st_vis = sc.read("your st_vis path/st.h5ad")
+
+X_norm = sc.pp.normalize_total(sc_ref,target_sum=1,inplace=False)['X']
+sc_ref.layers['data'] = X_norm
+
+# Initialization and Execution
+ucas = UCASpatial_ds_R1.UCASpatial(
+    sc_ref=sc_ref,
+    st_vis=st_vis,
+    clust_vr='your clust_vr',
+    meta_filter=False,
+    random_seed=12345
+)
+result = ucas.run()
+
+# Get the results
+nmf_components = result['nmf_components']
+cell_proportions = result['proportions']
+cell_proportions.to_csv('cell_proportions.csv')
 ```
 
 ## Issues
