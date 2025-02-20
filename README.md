@@ -68,11 +68,11 @@ Seurat::SpatialFeaturePlot(
 ```
 ## UCASpatial for python
 The core functionality of UCASpatial is already available in Python.
-You can utilize the released version of UCASpatial for Python from GitHub by downloading 'UCASpatial_python_v1.0.py' and importing it. Application examples can be found under the Python path of the current GitHub repository.
+You can utilize the released version of UCASpatial for Python from GitHub by downloading 'UCASpatial_ds_R1.py' and importing it. Application examples can be found under the Python path of the current GitHub repository.
 
 For using UCASpatial in Python:
 ```python
-import UCASpatial_python_v1.0
+import UCASpatial_ds_R1
 
 # Load the data
 sc_ref = sc.read("your sc_ref path/sc.h5ad")
