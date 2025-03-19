@@ -31,7 +31,7 @@ UCASpatial_result <- UCASpatial_deconv(
       st_vis = st_vis,
       clust_vr = clust_vr)
 ```
-UCASpatial also support the analysis on 10X Visium HD datasets:
+UCASpatial also supports the analysis on 10X Visium HD datasets (need R >= 4.4.1,Seurat >= 5.1.0):
 ```R
 # Run UCASpatial for 10X HD data
 UCASpatial_result <- UCASpatial_HD_deconv(
@@ -67,7 +67,7 @@ Seurat::SpatialFeaturePlot(
       min.cutoff = 0.03)
 ```
 ## UCASpatial for python
-The core functionality of UCASpatial is already available in Python.
+The core functionality of UCASpatial is already available in Python (While we still recommend using it in R).
 You can utilize the released version of UCASpatial for Python from GitHub by downloading 'UCASpatial_ds_R1.py' and importing it. Application examples can be found under the Python path of the current GitHub repository.
 
 For using UCASpatial in Python:
