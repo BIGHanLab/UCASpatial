@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UCASpatial - Ultra-resolution Spatial Transcriptomics Deconvolution</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">UCASpatial</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="overview.html">Overview</a></li>
+                <li><a href="installation.html">Installation</a></li>
+                <li><a href="tutorial.html">Tutorial</a></li>
+                <li><a href="examples.html">Examples</a></li>
+                <li><a href="datasets.html">Datasets</a></li>
+                <li><a href="api.html">API</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>UCASpatial</h1>
+            <h2>Ultra-resolution Deconvolution of Spatial Transcriptomics</h2>
+            <p>Unveiling Spatiotemporal Cellular Dynamics in Complex Microenvironments</p>
+            <div class="cta-buttons">
+                <a href="installation.html" class="btn-primary">Get Started</a>
+                <a href="tutorial.html" class="btn-secondary">View Tutorial</a>
+                <a href="datasets.html" class="btn-secondary">Sample Datasets</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Key Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Ultra-resolution</h3>
+                    <p>Improves resolution of mapping cell subpopulations to spatial locations</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Entropy-based Weighting</h3>
+                    <p>Leverages gene contribution through entropy-based weighting for cell identity</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Robust & Accurate</h3>
+                    <p>Enhanced identification of low-abundant and transcriptionally heterogeneous cell subpopulations</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Multi-platform</h3>
+                    <p>Support for both R and Python, including 10X Visium HD datasets</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="quick-start" class="quick-start">
+        <div class="container">
+            <h2>Quick Start</h2>
+            <div class="code-example">
+                <h3>R</h3>
+                <pre><code># Install
+devtools::install_github('https://github.com/BIGHanLab/UCASpatial/')
+
+# Load data
+sc_ref <- readRDS("path/to/sc_reference.rds")
+st_vis <- readRDS("path/to/st_data.rds")
+
+# Run UCASpatial
+result <- UCASpatial_deconv(sc_ref, st_vis, clust_vr="celltype")</code></pre>
+            </div>
+            
+            <div class="code-example">
+                <h3>Python</h3>
+                <pre><code># Import
+import UCASpatial_ds_R1
+
+# Load data
+sc_ref = sc.read("path/to/sc_reference.h5ad")
+st_vis = sc.read("path/to/st_data.h5ad")
+
+# Run UCASpatial
+ucas = UCASpatial_ds_R1.UCASpatial(sc_ref, st_vis, clust_vr='celltype')
+result = ucas.run()</code></pre>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
