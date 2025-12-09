@@ -7,6 +7,7 @@ This repository contains the tutorial website for UCASpatial, an ultra-resolutio
 Visit the live tutorial website: **[UCASpatial Tutorial](https://yourusername.github.io/UCASpatial/)**
 
 ## 📁 Repository Structure
+```
 UCASpatial/docs/
 ├── index.html              # Homepage
 ├── overview.html           # Algorithm overview
@@ -21,7 +22,7 @@ UCASpatial/docs/
 ├── assets/                # Images and additional files
 ├── datasets/              # Sample datasets (to be added)
 └── examples/              # Detailed example pages
-
+```
 
 ## 🚀 Quick Setup for GitHub Pages
 
