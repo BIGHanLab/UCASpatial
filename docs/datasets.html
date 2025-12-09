@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Datasets - UCASpatial</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">UCASpatial</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="overview.html">Overview</a></li>
+                <li><a href="installation.html">Installation</a></li>
+                <li><a href="tutorial.html">Tutorial</a></li>
+                <li><a href="examples.html">Examples</a></li>
+                <li><a href="datasets.html">Datasets</a></li>
+                <li><a href="api.html">API</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="content-section">
+        <div class="container">
+            <h1>Sample Datasets</h1>
+            <p>Download example datasets to test UCASpatial and follow along with our tutorials.</p>
+
+            <div class="dataset-section">
+                <h2>Standard Datasets</h2>
+                <div class="dataset-grid">
+                    <div class="dataset-card" id="pbmc-data">
+                        <h3>Human PBMC</h3>
+                        <p>Human peripheral blood mononuclear cells - ideal for beginners</p>
+                        <div class="dataset-info">
+                            <strong>Format:</strong> R (.rds) & Python (.h5ad)<br>
+                            <strong>Size:</strong> ~50MB<br>
+                            <strong>Cell types:</strong> 8 major immune cell types<br>
+                            <strong>Spatial spots:</strong> ~3,000
+                        </div>
+                        <div class="dataset-links">
+                            <a href="#" class="btn-download" data-path="datasets/pbmc/">Download</a>
+                            <a href="tutorial.html#pbmc" class="btn-tutorial">Tutorial</a>
+                        </div>
+                        <div class="file-structure">
+                            <h4>File Structure:</h4>
+                            <pre>datasets/pbmc/
+├── sc_reference.rds       # Single-cell reference
+├── st_data.rds           # Spatial transcriptomics data
+├── metadata.xlsx         # Sample metadata
+└── README.md            # Detailed description</pre>
+                        </div>
+                    </div>
+
+                    <div class="dataset-card" id="brain-data">
+                        <h3>Mouse Brain</h3>
+                        <p>Mouse brain tissue - great for neuroscience applications</p>
+                        <div class="dataset-info">
+                            <strong>Format:</strong> R (.rds) & Python (.h5ad)<br>
+                            <strong>Size:</strong> ~120MB<br>
+                            <strong>Cell types:</strong> 12 neuronal and glial cell types<br>
+                            <strong>Spatial spots:</strong> ~4,500
+                        </div>
+                        <div class="dataset-links">
+                            <a href="#" class="btn-download" data-path="datasets/brain/">Download</a>
+                            <a href="tutorial.html#brain" class="btn-tutorial">Tutorial</a>
+                        </div>
+                        <div class="file-structure">
+                            <h4>File Structure:</h4>
+                            <pre>datasets/brain/
+├── sc_reference.rds       # Single-cell reference
+├── st_data.rds           # Spatial transcriptomics data
+├── annotation.txt        # Cell type annotations
+└── images/               # Histology images</pre>
+                        </div>
+                    </div>
+
+                    <div class="dataset-card" id="tumor-data">
+                        <h3>Breast Cancer</h3>
+                        <p>Human breast cancer tissue - tumor microenvironment analysis</p>
+                        <div class="dataset-info">
+                            <strong>Format:</strong> R (.rds) & Python (.h5ad)<br>
+                            <strong>Size:</strong> ~200MB<br>
+                            <strong>Cell types:</strong> Tumor, immune, stromal cells<br>
+                            <strong>Spatial spots:</strong> ~6,000
+                        </div>
+                        <div class="dataset-links">
+                            <a href="#" class="btn-download" data-path="datasets/tumor/">Download</a>
+                            <a href="tutorial.html#tumor" class="btn-tutorial">Tutorial</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dataset-section">
+                <h2>10X Visium HD Datasets</h2>
+                <div class="dataset-grid">
+                    <div class="dataset-card" id="visium-hd-data">
+                        <h3>Mouse Brain HD</h3>
+                        <p>High-resolution mouse brain data (8μm resolution)</p>
+                        <div class="dataset-info">
+                            <strong>Format:</strong> R (.rds) & Python (.h5ad)<br>
+                            <strong>Size:</strong> ~800MB<br>
+                            <strong>Resolution:</strong> 8μm<br>
+                            <strong>Spatial spots:</strong> ~50,000
+                        </div>
+                        <div class="dataset-links">
+                            <a href="#" class="btn-download" data-path="datasets/visium_hd_brain/">Download</a>
+                            <a href="tutorial.html#visium-hd" class="btn-tutorial">HD Tutorial</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dataset-section">
+                <h2>Public Data Sources</h2>
+                <div class="public-data-info">
+                    <h3>Where to Find More Data</h3>
+                    <ul>
+                        <li><strong>10X Genomics:</strong> <a href="https://www.10xgenomics.com/resources/datasets" target="_blank">Official datasets</a></li>
+                        <li><strong>GEO:</strong> <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">Gene Expression Omnibus</a></li>
+                        <li><strong>Single Cell Portal:</strong> <a href="https://singlecell.broadinstitute.org/" target="_blank">Broad Institute</a></li>
+                        <li><strong>PanglaoDB:</strong> <a href="https://panglaodb.se/" target="_blank">Single cell database</a></li>
+                        <li><strong>CZ CellxGene:</strong> <a href="https://cellxgene.cziscience.com/" target="_blank">CZI CellxGene</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dataset-preparation">
+                <h2>Dataset Preparation Guide</h2>
+                <div class="preparation-steps">
+                    <div class="step">
+                        <h3>1. Data Requirements</h3>
+                        <p>For UCASpatial, you need:</p>
+                        <ul>
+                            <li>Single-cell reference data with cell type annotations</li>
+                            <li>Spatial transcriptomics data from same tissue type</li>
+                            <li>Matching gene annotations between datasets</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="step">
+                        <h3>2. Format Conversion</h3>
+                        <p>Convert your data to required formats:</p>
+                        <pre><code># R format
+sc_ref <- as.Seurat(sce_object)
+st_vis <- as.Seurat(st_object)
+
+# Python format
+adata_sc = sc.read_h5ad("sc_data.h5ad")
+adata_st = sc.read_h5ad("st_data.h5ad")</code></pre>
+                    </div>
+                    
+                    <div class="step">
+                        <h3>3. Quality Control</h3>
+                        <p>Basic QC steps:</p>
+                        <ul>
+                            <li>Filter low-quality cells/spots</li>
+                            <li>Remove doublets</li>
+                            <li>Check mitochondrial content</li>
+                            <li>Validate cell type annotations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
