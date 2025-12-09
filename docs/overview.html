@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UCASpatial Overview</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <!-- Same navigation as homepage -->
+    </nav>
+
+    <section class="content-section">
+        <div class="container">
+            <h1>Algorithm Overview</h1>
+            
+            <div class="overview-content">
+                <h2>What is UCASpatial?</h2>
+                <p>UCASpatial is an ultra-resolution spatial transcriptomics deconvolution algorithm that improves the resolution of mapping cell subpopulations to spatial locations. It leverages the contribution of genes indicative of cell identity through entropy-based weighting.</p>
+
+                <h2>Key Innovations</h2>
+                <ul>
+                    <li><strong>Entropy-based Feature Selection:</strong> Uses information entropy to identify genes that best distinguish cell types</li>
+                    <li><strong>Ultra-resolution Mapping:</strong> Achieves higher spatial resolution than conventional methods</li>
+                    <li><strong>Robust Deconvolution:</strong> Handles low-abundant cell populations effectively</li>
+                    <li><strong>Multi-platform Support:</strong> Works with various spatial transcriptomics platforms</li>
+                </ul>
+
+                <h2>Methodology</h2>
+                <div class="methodology-steps">
+                    <div class="step">
+                        <h3>Step 1: Data Preprocessing</h3>
+                        <p>Normalize and preprocess both single-cell reference and spatial transcriptomics data</p>
+                    </div>
+                    <div class="step">
+                        <h3>Step 2: Entropy-based Gene Selection</h3>
+                        <p>Calculate information entropy for each gene to identify cell-type specific markers</p>
+                    </div>
+                    <div class="step">
+                        <h3>Step 3: NMF Deconvolution</h3>
+                        <p>Apply Non-negative Matrix Factorization with entropy-weighted genes</p>
+                    </div>
+                    <div class="step">
+                        <h3>Step 4: Cell Proportion Estimation</h3>
+                        <p>Estimate cell type proportions at each spatial location</p>
+                    </div>
+                </div>
+
+                <h2>Applications</h2>
+                <div class="applications-grid">
+                    <div class="app-card">
+                        <h3>Tumor Microenvironment</h3>
+                        <p>Characterize immune cell infiltration patterns in tumors</p>
+                    </div>
+                    <div class="app-card">
+                        <h3>Developmental Biology</h3>
+                        <p>Study spatial organization during tissue development</p>
+                    </div>
+                    <div class="app-card">
+                        <h3>Neuroscience</h3>
+                        <p>Map neuronal cell types in brain tissue</p>
+                    </div>
+                    <div class="app-card">
+                        <h3>Disease Research</h3>
+                        <p>Investigate cellular changes in disease states</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
