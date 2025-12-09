@@ -1,0 +1,41 @@
+# GitHub Pages Configuration
+title: UCASpatial
+description: Ultra-precision Deconvolution of Spatial Transcriptomics
+baseurl: "/UCASpatial" # 替换为您的仓库名
+url: "https://yourusername.github.io" # 替换为您的GitHub Pages URL
+
+# 主题设置
+markdown: kramdown
+highlighter: rouge
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# 代码高亮
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# 导航
+navigation:
+  - title: Home
+    url: index.html
+  - title: Overview
+    url: overview.html
+  - title: Installation
+    url: installation.html
+  - title: Tutorial
+    url: tutorial.html
+  - title: Examples
+    url: examples.html
+  - title: Datasets
+    url: datasets.html
+  - title: API
+    url: api.html
+  - title: FAQ
+    url: faq.html
+
+# 社交媒体链接
+github:
+  repository_url: https://github.com/BIGHanLab/UCASpatial
+  repository_name: BIGHanLab/UCASpatial
