@@ -6,6 +6,7 @@ description: ~
 
 `UCASpatial` is implemented as an R package, which can be installed from GitHub by:
 
+## UCASpatial for R
 ### Dependencies
 * R >= 3.6.1
 * Seurat >= 3.1.4
@@ -30,3 +31,11 @@ source('/DataPath/UCASpatial_v1.R')
 ```r
 library(UCASpatial)
 ```
+
+## UCASpatial for python
+The core functionality of UCASpatial is already available in Python (While we still recommend using it in R).
+You can utilize the released version of UCASpatial for Python from GitHub by downloading 'UCASpatial_ds_R1.py' and importing it. Application examples can be found under the Python path of the current GitHub repository.
+
+For using UCASpatial in Python:
+```python
+import UCASpatial_ds_R1
