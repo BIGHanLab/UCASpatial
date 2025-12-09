@@ -56,11 +56,3 @@ cd UCASpatial
 python -m http.server 8000
 ```
 
-# Or use Live Server extension in VS Code
-
-📄 License
-This tutorial website is distributed under the same license as UCASpatial.
-🤝 Contributing
-Feel free to submit issues or pull requests to improve the tutorial.
-📞 Contact
-For questions about UCASpatial algorithm, please visit the main repository.
