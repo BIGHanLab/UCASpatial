@@ -79,8 +79,8 @@ UCASpatial_result <- UCASpatial_deconv(
 # Extract results
 decon_matr <- as.matrix(UCASpatial_result[[2]])
 cell_proportions <- decon_matr[,1:(ncol(decon_matr)-1)]
-cell_proportions <- cell_proportions/rowSums(cell_proportions)</code></pre>
-rownames(cell_proportions) <- colnames(st_vis)
+cell_proportions <- cell_proportions/rowSums(cell_proportions)
+rownames(cell_proportions) <- colnames(st_vis) </code></pre>
 
                     <h3>Python Implementation</h3>
                     <pre><code class="language-python">import UCASpatial_ds_R1
