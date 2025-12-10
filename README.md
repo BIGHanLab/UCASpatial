@@ -34,10 +34,12 @@ UCASpatial_result <- UCASpatial_deconv(
 UCASpatial also supports the analysis on 10X Visium HD datasets (need R >= 4.4.1,Seurat >= 5.1.0):
 ```R
 # Run UCASpatial for 10X HD data
+rowname_st_vis <- rownames(st_vis)
 UCASpatial_result <- UCASpatial_HD_deconv(
       sc_ref = sc_ref,
       st_vis = st_vis,
       spatial.assay='Spatial.008um',
+      rowname_st_vis = rowname_st_vis,
       clust_vr = clust_vr)
 ```
 
