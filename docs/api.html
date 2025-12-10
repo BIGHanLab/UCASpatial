@@ -27,6 +27,37 @@
                         <li><code>sc_ref</code>: Single-cell reference Seurat object</li>
                         <li><code>st_vis</code>: Spatial transcriptomics Seurat object</li>
                         <li><code>clust_vr</code>: Name of cell type annotation column</li>
+                        
+                        <li><code>assay</code>: optional: set the default assay for sc_ref. By default is 'RNA'.</li>
+                        <li><code>slot</code>: optional: set the default slot for sc_ref. By default is 'counts'.</li>
+                        <li><code>output_path</code>: optional: set the output path for the intermediate files. If is NULL, it will use current path by 'getwd()' function. By default is 'NULL'.</li>
+                        <li><code>cluster_markers</code>: optional: give the marker genes for each cluster of sc_ref. If is NULL, it will be calculated use the default parameters. By default is 'NULL'.</li>
+                        <li><code>min.pct</code>: optional: parameter for Seurat::FindAllMarkers</li>
+                        <li><code>logfc.threshold</code>: optional: parameter for Seurat::FindAllMarkers</li>
+                        <li><code>min.diff.pct</code>: optional: parameter for Seurat::FindAllMarkers</li>
+                        <li><code>normalize</code>: optional: method for normalizing the count matrix, including uv: unit variance, raw: no transformation applied. By default is 'uv'.</li>
+                        <li><code>downsample_n</code>: optional: set the downsample number of times. By default is '1'.</li>
+                        <li><code>n_cluster</code>: optional: set the maximum size for each cluster after downsample. By default is '100'.</li>
+                        <li><code>n_top</code>: optional: set the n_top marker gene used for each cluster. By default is 'NULL'.</li>
+                        <li><code>min_cont</code>: optional: set the cutoff threshold. By default is '0.01'.</li>
+                        <li><code>remove.RPL</code>: whether remove the RPL-related genes. By default is 'FALSE'.</li>
+                        <li><code>remove.MT</code>: whether remove the MT-related genes. By default is 'FALSE'.</li>
+                        <li><code>cos.filter</code>: optional: whether use the cosg methods to filter some features. By default is 'TRUE'.</li>
+                        <li><code>cos.mu</code>: optional: parameter for cosg. By default is 1.</li>
+                        <li><code>cos.n_genes_user</code>: optional: parameter for cosg. By default is 900.</li>
+                        <li><code>marker.slot</code>: optional: set the slot of sc_ref for marker finding. By default is 'data'.</li>
+                        <li><code>min_cont</code>: optional: parameter for calculating entropy. By default is '0.01'.</li>
+                        <li><code>unit</code>: optional: parameter for calculating entropy. By default is 'log2'.</li>
+                        <li><code>random.seed</code>: optional: set the random seed for randomly downsampling. By default is '10000'.</li>
+                        <li><code>meta.filter</code>: optional: whether execute meta-purity filtering process. By default is 'TRUE'.</li>
+                        <li><code>nmf.tol</code>: optional: parameter for the nmf iteration. By default is '1e-04'.</li>
+                        <li><code>meta.assay</code>: optional: assay parameter for meta-purity filtering. By default is 'integrated'.</li>
+                        <li><code>meta.ndims</code>: optional: ndims parameter for meta-purity filtering. By default is '30'.</li>
+                        <li><code>meta.resolution</code>: optional: resolution parameter for meta-purity filtering. By default is '100'.</li>
+                        <li><code>meta.purity</code>: optional: purity parameter for meta-purity filtering. By default is '0.95'.</li>
+                        <li><code>ent.filter.threshold</code>: optional: parameter for filtering low quality features based on entropy.</li>
+                        <li><code>cos.filter.threshold</code>: optional: parameter for filtering low quality features based on cosine similarity.</li>
+                        <li><code>weight.filter.threshold</code>: optional: parameter for filtering low quality features based on weight.</li>
                     </ul>
                     
                     <h4>Returns</h4>
@@ -43,6 +74,38 @@
                         <li><code>st_vis</code>: Spatial transcriptomics Seurat object</li>
                         <li><code>spatial.assay</code>: Spatial assay name (e.g., 'Spatial.008um')</li>
                         <li><code>clust_vr</code>: Name of cell type annotation column</li>
+                        
+                        <li><code>rowname_st_vis</code>: optional: provide a vector including the row names of st.vis.</li>
+                        <li><code>assay</code>: optional: set the default assay for sc_ref. By default is 'RNA'.</li>
+                        <li><code>slot</code>: optional: set the default slot for sc_ref. By default is 'counts'.</li>
+                        <li><code>output_path</code>: optional: set the output path for the intermediate files. If is NULL, it will use current path by 'getwd()' function. By default is 'NULL'.</li>
+                        <li><code>cluster_markers</code>: optional: give the marker genes for each cluster of sc_ref. If is NULL, it will be calculated use the default parameters. By default is 'NULL'.</li>
+                        <li><code>min.pct</code>: optional: parameter for Seurat::FindAllMarkers</li>
+                        <li><code>logfc.threshold</code>: optional: parameter for Seurat::FindAllMarkers</li>
+                        <li><code>min.diff.pct</code>: optional: parameter for Seurat::FindAllMarkers</li>
+                        <li><code>normalize</code>: optional: method for normalizing the count matrix, including uv: unit variance, raw: no transformation applied. By default is 'uv'.</li>
+                        <li><code>downsample_n</code>: optional: set the downsample number of times. By default is '1'.</li>
+                        <li><code>n_cluster</code>: optional: set the maximum size for each cluster after downsample. By default is '100'.</li>
+                        <li><code>n_top</code>: optional: set the n_top marker gene used for each cluster. By default is 'NULL'.</li>
+                        <li><code>min_cont</code>: optional: set the cutoff threshold. By default is '0.01'.</li>
+                        <li><code>remove.RPL</code>: whether to remove the RPL-related genes. By default is 'FALSE'.</li>
+                        <li><code>remove.MT</code>: whether to remove the MT-related genes. By default is 'FALSE'.</li>
+                        <li><code>cos.filter</code>: optional: whether to use the cosg methods to filter some features. By default is 'TRUE'.</li>
+                        <li><code>cos.mu</code>: optional: parameter for cosg. By default is 1.</li>
+                        <li><code>cos.n_genes_user</code>: optional: parameter for cosg. By default is 900.</li>
+                        <li><code>marker.slot</code>: optional: set the slot of sc_ref for marker finding. By default is 'data'.</li>
+                        <li><code>min_cont</code>: optional: parameter for calculating entropy. By default is '0.01'.</li>
+                        <li><code>unit</code>: optional: parameter for calculating entropy. By default is 'log2'.</li>
+                        <li><code>random.seed</code>: optional: set the random seed for randomly downsampling. By default is '10000'.</li>
+                        <li><code>meta.filter</code>: optional: whether execute meta-purity filtering process. By default is 'TRUE'.</li>
+                        <li><code>nmf.tol</code>: optional: parameter for the nmf iteration. By default is '1e-04'.</li>
+                        <li><code>meta.assay</code>: optional: assay parameter for meta-purity filtering. By default is 'integrated'.</li>
+                        <li><code>meta.ndims</code>: optional: ndims parameter for meta-purity filtering. By default is '30'.</li>
+                        <li><code>meta.resolution</code>: optional: resolution parameter for meta-purity filtering. By default is '100'.</li>
+                        <li><code>meta.purity</code>: optional: purity parameter for meta-purity filtering. By default is '0.95'.</li>
+                        <li><code>ent.filter.threshold</code>: optional: parameter for filtering low-quality features based on entropy.</li>
+                        <li><code>cos.filter.threshold</code>: optional: parameter for filtering low-quality features based on cosine similarity.</li>
+                        <li><code>weight.filter.threshold</code>: optional: parameter for filtering low-quality features based on weight.</li>
                     </ul>
                 </div>
 
@@ -54,11 +117,39 @@
                     
                     <h4>Parameters</h4>
                     <ul>
-                        <li><code>sc_ref</code>: Single-cell reference AnnData object</li>
-                        <li><code>st_vis</code>: Spatial transcriptomics AnnData object</li>
-                        <li><code>clust_vr</code>: Cell type annotation column name</li>
-                        <li><code>meta_filter</code>: Whether to filter metadata (default: False)</li>
-                        <li><code>random_seed</code>: Random seed for reproducibility</li>
+                        <li><code>sc_ref</code>: reference single-cell RNA-seq data (<code>ad.AnnData</code>)</li>
+                        <li><code>st_vis</code>: spatial transcriptomic data (<code>ad.AnnData</code>)</li>
+                        <li><code>clust_vr</code>: column name in <code>sc_ref.obs</code> storing cell-type/cluster labels (<code>str</code>)</li>
+                        
+                        <li><code>assay</code>: assay to use in <code>sc_ref</code>; default <code>'RNA'</code> (<code>str</code>)</li>
+                        <li><code>slot</code>: data slot in <code>sc_ref</code>; default <code>'counts'</code> (<code>str</code>)</li>
+                        <li><code>output_path</code>: directory for intermediate files; <code>None</code> → current working dir (<code>Optional[str]</code>)</li>
+                        <li><code>cluster_markers</code>: pre-computed marker <code>DataFrame</code>; <code>None</code> → compute on the fly (<code>Optional[pd.DataFrame]</code>)</li>
+                        <li><code>min_pct</code>: minimum percent cells expressing gene for marker detection; default <code>0.2</code> (<code>float</code>)</li>
+                        <li><code>logfc_threshold</code>: minimum log fold-change for marker detection; default <code>0.25</code> (<code>float</code>)</li>
+                        <li><code>min_diff_pct</code>: minimum difference in detection rate between clusters; default <code>0.1</code> (<code>float</code>)</li>
+                        <li><code>normalize_method</code>: count normalization method; <code>'uv'</code> (unit-variance) or <code>'raw'</code>; default <code>'uv'</code> (<code>str</code>)</li>
+                        <li><code>downsample_n</code>: number of downsampling replicates; default <code>1</code> (<code>int</code>)</li>
+                        <li><code>n_cluster</code>: max cells per cluster after downsampling; default <code>100</code> (<code>int</code>)</li>
+                        <li><code>n_top</code>: top-N marker genes to retain per cluster; <code>None</code> → use all (<code>Optional[int]</code>)</li>
+                        <li><code>min_cont</code>: minimum contribution threshold for entropy & deconvolution; default <code>0.01</code> (<code>float</code>)</li>
+                        <li><code>remove_RPL</code>: discard ribosomal protein genes; default <code>False</code> (<code>bool</code>)</li>
+                        <li><code>remove_MT</code>: discard mitochondrial genes; default <code>False</code> (<code>bool</code>)</li>
+                        <li><code>cos_filter</code>: apply cosine-similarity feature filtering; default <code>True</code> (<code>bool</code>)</li>
+                        <li><code>cos_mu</code>: cosine parameter μ; default <code>1</code> (<code>float</code>)</li>
+                        <li><code>cos_n_genes_user</code>: number of genes to keep via cosine filter; default <code>900</code> (<code>int</code>)</li>
+                        <li><code>marker_slot</code>: layer in <code>sc_ref</code> used for marker discovery; default <code>'data'</code> (<code>str</code>)</li>
+                        <li><code>unit</code>: entropy log unit; default <code>'log2'</code> (<code>str</code>)</li>
+                        <li><code>random_seed</code>: seed for downsampling & NMF reproducibility; default <code>10000</code> (<code>int</code>)</li>
+                        <li><code>meta_filter</code>: enable meta-purity filtering; default <code>True</code> (<code>bool</code>)</li>
+                        <li><code>nmf_tol</code>: NMF convergence tolerance; default <code>1e-4</code> (<code>float</code>)</li>
+                        <li><code>meta_assay</code>: assay for meta-purity filtering; default <code>'integrated'</code> (<code>str</code>)</li>
+                        <li><code>meta_ndims</code>: number of dimensions for meta-purity clustering; default <code>30</code> (<code>int</code>)</li>
+                        <li><code>meta_resolution</code>: resolution for meta-purity clustering; default <code>100</code> (<code>int</code>)</li>
+                        <li><code>meta_purity</code>: minimum purity cutoff for meta filtering; default <code>0.95</code> (<code>float</code>)</li>
+                        <li><code>ent_filter_threshold</code>: entropy-based feature filter cutoff; default <code>0.5</code> (<code>float</code>)</li>
+                        <li><code>cos_filter_threshold</code>: cosine similarity filter cutoff; default <code>0.05</code> (<code>float</code>)</li>
+                        <li><code>weight_filter_threshold</code>: weight-based feature filter cutoff; default <code>0.2</code> (<code>float</code>)</li>
                     </ul>
                     
                     <h4>Methods</h4>
