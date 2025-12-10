@@ -295,16 +295,14 @@ plot_list</code></pre>
                     
                     <h3>R Implementation for Visium HD</h3>
                     <pre><code class="language-r"># For 10X Visium HD data
+rowname_st_vis <- rownames(st_vis)
 UCASpatial_result <- UCASpatial_HD_deconv(
     sc_ref = sc_ref,
     st_vis = st_vis,
     spatial.assay = 'Spatial.008um',  # adjust resolution as needed
     clust_vr = clust_vr,
-    downsample_n = 0,
-    meta.filter = FALSE,
-    cos.filter.threshold = 0.05,
-    ent.filter.threshold = 0.5,
-    weight.filter.threshold = 0.2
+    rowname_st_vis = rowname_st_vis,
+    meta.filter = FALSE
 )
 
 # Alternative resolution options:
