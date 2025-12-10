@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial - UCASpatial</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <!-- Navigation -->
+    </nav>
+
+    <section class="content-section">
+        <div class="container">
+            <h1>Step-by-Step Tutorial</h1>
+
+            <div class="tutorial-nav">
+                <ul class="tutorial-menu">
+                    <li><a href="#data-preparation">Data Preparation</a></li>
+                    <li><a href="#basic-usage">Basic Usage</a></li>
+                    <li><a href="#complete-example">Complete Example</a></li>
+                    <li><a href="#visium-hd">10X Visium HD</a></li>
+                    <li><a href="#visualization">Visualization</a></li>
+                    <li><a href="#interpretation">Result Interpretation</a></li>
+                </ul>
+            </div>
+
+            <div class="tutorial-content">
+                <section id="data-preparation">
+                    <h2>Data Preparation</h2>
+                    
+                    <h3>Required Data</h3>
+                    <ul>
+                        <li><strong>Single-cell reference data:</strong> scRNA-seq or snRNA-seq with cell type annotations</li>
+                        <li><strong>Spatial transcriptomics data:</strong> ST data from platforms like 10X Visium</li>
+                    </ul>
+
+                    <h3>Data Format Requirements</h3>
+                    <pre><code class="language-r"># R format - Seurat objects
+# Single-cell reference
+sc_ref <- readRDS("path/to/sc_data.rds")
+# Must contain: sc_ref$clust_vr (cell type annotations)
+
+# Spatial data
+st_vis <- readRDS("path/to/st_data.rds")
+# Standard Seurat object with spatial assays</code></pre>
+
+                    <pre><code class="language-python"># Python format - AnnData objects
+# Single-cell reference
+sc_ref = sc.read("path/to/sc.h5ad")
+# Must contain: sc_ref.obs['clust_vr'] (cell type annotations)
+
+# Spatial data
+st_vis = sc.read("path/to/st.h5ad")</code></pre>
+                </section>
+
+                <section id="basic-usage">
+                    <h2>Basic Usage</h2>
+                    
+                    <h3>R Implementation</h3>
+                    <pre><code class="language-r"># Load required libraries
+library(Seurat)
+library(dplyr)
+library(tibble)
+
+# Load your data
+st_vis <- readRDS('/datapath/ST_data.rds')
+sc_ref <- readRDS('/datapath/SC_data.rds')  # cluster info in 'sc_ref$clust_vr'
+
+# Set cluster variable name (adjust based on your data)
+clust_vr <- "celltype"  
+
+# Run UCASpatial to map cell subpopulations to spatial locations
+UCASpatial_result <- UCASpatial_deconv(
+    sc_ref = sc_ref,
+    st_vis = st_vis,
+    clust_vr = clust_vr
+)
+
+# Extract and process results
+decon_matr <- as.matrix(UCASpatial_result[[2]])[,1:(ncol(UCASpatial_result[[2]])-1)]
+decon_matr <- decon_matr/rowSums(decon_matr)
+rownames(decon_matr) <- colnames(st_vis)
+
+# Create dataframe for integration with Seurat
+decon_df <- decon_matr %>%
+    data.frame() %>%
+    tibble::rownames_to_column("barcodes")
+
+# Add deconvolution results to Seurat object metadata
+st_vis@meta.data <- st_vis@meta.data %>%
+    tibble::rownames_to_column("barcodes") %>%
+    dplyr::left_join(decon_df, by = "barcodes") %>%
+    tibble::column_to_rownames("barcodes")</code></pre>
+
+                    <h3>Python Implementation</h3>
+                    <pre><code class="language-python">import UCASpatial_ds_R1
+import scanpy as sc
+import pandas as pd
+
+# Load the data
+sc_ref = sc.read("path/to/sc.h5ad")
+st_vis = sc.read("path/to/st.h5ad")
+
+# Normalize single-cell data
+X_norm = sc.pp.normalize_total(sc_ref, target_sum=1, inplace=False)['X']
+sc_ref.layers['data'] = X_norm
+
+# Initialize and run UCASpatial
+ucas = UCASpatial_ds_R1.UCASpatial(
+    sc_ref=sc_ref,
+    st_vis=st_vis,
+    clust_vr='celltype',  # adjust based on your data
+    meta_filter=False,
+    random_seed=12345
+)
+
+# Get results
+result = ucas.run()
+nmf_components = result['nmf_components']
+cell_proportions = result['proportions']
+
+# Save results
+cell_proportions.to_csv('cell_proportions.csv')</code></pre>
+                </section>
+
+                <section id="complete-example">
+                    <h2>Complete Example: Human Colorectal Cancer Analysis</h2>
+                    
+                    <h3>Dataset Information</h3>
+                    <p>This example uses human colorectal cancer data from <a href="https://www.nature.com/articles/s41467-022-29366-6" target="_blank">Qi et al, 2022</a>. The dataset includes:</p>
+                    <ul>
+                        <li>Spatial transcriptomics data from colorectal cancer tissue</li>
+                        <li>Single-cell RNA-seq reference with detailed cell type annotations</li>
+                        <li>28 distinct cell types including immune cells, tumor cells, and stromal populations</li>
+                    </ul>
+
+                    <h3>Download Example Data</h3>
+                    <p>Download the example datasets from: <a href="https://zenodo.org/records/12634581" target="_blank">Zenodo Repository</a></p>
+
+                    <h3>Load and Explore Data</h3>
+                    <pre><code class="language-r"># Load required libraries
+library(Seurat)
+library(dplyr)
+library(tibble)
+library(UCASpatial)
+
+# Load spatial transcriptomics data
+st_vis <- readRDS("./Human_CRC_ST_data.rds")
+st_vis
+# An object of class Seurat 
+# 36601 features across 4248 samples within 1 assay 
+# Active assay: Spatial (36601 features, 2000 variable features)
+# 3 layers present: counts, data, scale.data
+# 2 dimensional reductions calculated: pca, umap
+# 1 image present: image
+
+# Load single-cell reference data
+sc_ref <- readRDS('./sc_ref_down.rds')
+sc_ref
+# An object of class Seurat 
+# 45217 features across 2913 samples within 7 assays 
+# Active assay: RNA (27905 features, 0 variable features)
+# 2 layers present: counts, data
+# 6 other assays present: integrated, source, protein, transfered_type, transfered_subtype, SCT
+# 2 dimensional reductions calculated: pca, umap
+
+# Set cell type annotation variable
+clust_vr <- 'UCASpatial_clus_v7'
+
+# Check cell type distribution in reference
+table(sc_ref$UCASpatial_clus_v7)
+# CD8 Tem              CD8 Tex              CD8 Trm 
+# 100                  100                   48 
+# CD4 Tn               CD4 Tm                  Tfh 
+# 100                  100                   15 
+# Th1/Th17             Treg                    NK 
+# 34                   100                  100 
+# ILC                 Mast             Monocyte 
+# 100                  100                  100 
+# Neutrophil        IGF1+ Mac           FN1+ Mac 
+# 2                    100                  100 
+# PDPN+ Mac             cDC1                 cDC2 
+# 72                    58                  100 
+# cDC3                  pDC           Fibroblast 
+# 58                    31                  100 
+# FAP+ Myofib    POSTN+ Myofib        Smooth Muscle 
+# 100                  100                  100 
+# Pericyte          Endothelium                Glial 
+# 100                  100                  100 
+# B                 Plasma        Epithelium c1 
+# 100                  100                  100 
+# LEFTY1+ Epithelium c2 TM4SF1+ Epithelium c3  MUC2+ Epithelium c4 
+# 100                   100                  100 
+# REG1A+ Epithelium c5 
+# 95</code></pre>
+
+                    <h3>Run UCASpatial Deconvolution</h3>
+                    <pre><code class="language-r"># Run UCASpatial with optimized parameters
+UCASpatial_result <- UCASpatial_deconv(
+    sc_ref = sc_ref,
+    st_vis = st_vis,
+    clust_vr = clust_vr,
+    downsample_n = 0,                    # No downsampling
+    meta.filter = FALSE,                 # No meta filtering
+    cos.filter.threshold = 0.05,         # Cosine similarity threshold
+    ent.filter.threshold = 0.5,          # Entropy threshold
+    weight.filter.threshold = 0.2        # Weight filtering threshold
+)
+
+# Expected output:
+# Load required packages...
+# Step0    Check the variables............................
+# Step0    Preprocess the sc_ref data..................... 
+# Step0.1  Meta.cell filter...............................
+# Step1    Calculate the markers and add weights..........
+# Step1.1  Calculate the marker genes.....................
+# Step1.2  Calculate the entropy-based weight.............
+# Step1.3  Calculate the cosine-based weight............. 
+# Step1.4  Filter the markers............................
+# Step2    Train the nsNMF model.........................
+# Step3    Calculate the cluster-topic profile...........
+# Step4    Weighted-NNLS to implement the deconvolution..
+# [1] "Deconvoluting spots"
+# |=====================================================================| 100%</code></pre>
+
+                    <h3>Quality Control Assessment</h3>
+                    <pre><code class="language-r"># Generate quality control plot
+p <- dot_plot_profiles_fun(
+    UCASpatial_result[[1]][[1]]@h,
+    UCASpatial_result[[1]][[2]]
+)[2]
+print(p)
+
+# Check reconstruction quality
+reconstruction_error <- UCASpatial_result[[1]][[3]]
+print(paste("Reconstruction error:", reconstruction_error))
+
+# The QC plot shows how well cell type signatures are preserved during deconvolution
+# Lower reconstruction error indicates better deconvolution quality</code></pre>
+
+                    <div class="result-image">
+                        <h4>Quality Control Plot Example:</h4>
+                        <img src="https://github.com/BIGHanLab/UCASpatial/raw/main/docs/documentation/QC_plot_UCASpatial.png" 
+                             alt="Quality Control Plot" 
+                             style="max-width: 600px; width: 100%; height: auto;">
+                        <p><em>Dot plot showing the quality of deconvolution for each cell type. The size represents the expression level and color intensity represents the percentage of expressing cells.</em></p>
+                        <p><strong>Data Source:</strong> <a href="https://github.com/BIGHanLab/UCASpatial/blob/main/docs/documentation/QC_plot_UCASpatial.png" 
+                                                           target="_blank">View on GitHub</a></p>
+                    </div>
+
+                    <h3>Extract and Process Results</h3>
+                    <pre><code class="language-r"># Extract deconvolution matrix
+decon_matr <- as.matrix(UCASpatial_result[[2]])
+cell_proportions <- decon_matr[,1:(ncol(decon_matr)-1)]
+cell_proportions <- cell_proportions/rowSums(cell_proportions)
+rownames(cell_proportions) <- colnames(st_vis)
+
+# Create dataframe for visualization
+decon_df <- cell_proportions %>%
+    data.frame() %>%
+    tibble::rownames_to_column("barcodes")
+
+# Add results to Seurat object
+st_vis@meta.data <- st_vis@meta.data %>%
+    tibble::rownames_to_column("barcodes") %>%
+    dplyr::left_join(decon_df, by = "barcodes") %>%
+    tibble::column_to_rownames("barcodes")
+
+# Create annotation assay for visualization
+Annotation_assay <- CreateAssayObject(t(cell_proportions))
+st_vis@assays$Annotation <- Annotation_assay
+st_vis@assays$Annotation@key <- "annotation_"
+DefaultAssay(st_vis) <- "Annotation"</code></pre>
+
+                    <h3>Visualize Cell Type Distributions</h3>
+                    <pre><code class="language-r"># Select specific cell types for visualization
+selected_cell_types <- c('FAP+ Myofib', 'CD4 Tn', 'B')
+
+# Create spatial plots for selected cell types
+plot_list <- Seurat::SpatialFeaturePlot(
+    object = st_vis,
+    features = selected_cell_types,
+    stroke = NA,
+    pt.size.factor = 1000,
+    alpha = c(0.3, 1),
+    min.cutoff = 0.03
+)
+
+# Display plots
+plot_list</code></pre>
+
+                    <div class="result-image">
+                        <h4>Cell Type Distribution Example:</h4>
+                        <img src="https://github.com/BIGHanLab/UCASpatial/raw/main/docs/documentation/Cell_type_distributions_UCASpatial.png" 
+                             alt="Cell Type Distributions" 
+                             style="max-width: 800px; width: 100%; height: auto;">
+                        <p><em>Spatial distribution of selected cell types in colorectal cancer tissue. Red intensity indicates the proportion of each cell type at each spatial location.</em></p>
+                        <p><strong>Data Source:</strong> <a href="https://github.com/BIGHanLab/UCASpatial/blob/main/docs/documentation/Cell_type_distributions_UCASpatial.png" 
+                                                           target="_blank">View on GitHub</a></p>
+                    </div>
+
+                    <h3>Interpretation of Results</h3>
+                    <div class="interpretation-guide">
+                        <h4>Key Findings from Colorectal Cancer Analysis:</h4>
+                        <ul>
+                            <li><strong>Immune Cell Infiltration:</strong> CD8+ T cells and NK cells show distinct spatial patterns in tumor tissue</li>
+                            <li><strong>Fibroblast Distribution:</strong> FAP+ myofibroblasts are enriched in specific tumor regions</li>
+                            <li><strong>Tumor Heterogeneity:</strong> Different epithelial subpopulations show spatial segregation</li>
+                            <li><strong>Microenvironment Architecture:</strong> Clear spatial organization of immune and stromal components</li>
+                        </ul>
+
+                        <h4>Clinical Relevance:</h4>
+                        <ul>
+                            <li>Spatial distribution of immune cells may correlate with treatment response</li>
+                            <li>Fibroblast patterns could indicate tumor aggressiveness</li>
+                            <li>Epithelial heterogeneity reflects tumor evolution and progression</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="visium-hd">
+                    <h2>10X Visium HD Analysis</h2>
+                    
+                    <h3>R Implementation for Visium HD</h3>
+                    <pre><code class="language-r"># For 10X Visium HD data
+UCASpatial_result <- UCASpatial_HD_deconv(
+    sc_ref = sc_ref,
+    st_vis = st_vis,
+    spatial.assay = 'Spatial.008um',  # adjust resolution as needed
+    clust_vr = clust_vr,
+    downsample_n = 0,
+    meta.filter = FALSE,
+    cos.filter.threshold = 0.05,
+    ent.filter.threshold = 0.5,
+    weight.filter.threshold = 0.2
+)
+
+# Alternative resolution options:
+# spatial.assay = 'Spatial.016um'  # 16μm resolution
+# spatial.assay = 'Spatial.008um'  # 8μm resolution (highest)</code></pre>
+
+                    <h3>Tips for HD Data</h3>
+                    <ul>
+                        <li>Use appropriate spatial resolution (e.g., 'Spatial.008um', 'Spatial.016um')</li>
+                        <li>Consider computational resources for high-resolution data</li>
+                        <li>Validate results with known tissue markers</li>
+                        <li>Start with lower resolution for initial testing</li>
+                        <li>Monitor memory usage during processing</li>
+                    </ul>
+                </section>
+
+                <section id="interpretation">
+                    <h2>Result Interpretation</h2>
+                    
+                    <h3>Understanding Outputs</h3>
+                    <div class="output-explanation">
+                        <h4>UCASpatial_result Structure</h4>
+                        <ul>
+                            <li><code>UCASpatial_result[[1]]</code>: Contains evaluation metrics and quality assessments</li>
+                            <li><code>UCASpatial_result[[2]]</code>: Raw deconvolution matrix (cell type proportions)</li>
+                            <li><code>UCASpatial_result[[3]]</code>: Reconstruction error and other quality metrics</li>
+                        </ul>
+
+                        <h4>Quality Control Metrics</h4>
+                        <ul>
+                            <li><strong>Reconstruction Error:</strong> Lower values indicate better deconvolution quality</li>
+                            <li><strong>Dot Plot Profiles:</strong> Show how well cell type signatures are preserved</li>
+                            <li><strong>Spatial Coherence:</strong> Results should match expected tissue anatomy</li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
