@@ -104,6 +104,7 @@ cell_proportions.to_csv('cell_proportions.csv')
 
 ## Issues
 All feedback, bug reports, and suggestions are warmly welcomed! Please make sure to raise issues with a detailed and reproducible example and also please provide the output of your sessionInfo() in R!
+
 You may also contact us directly: XU Yin (xuy@big.ac.cn); HAN Dali (handl@big.ac.cn).
 
 ## How to cite UCASpatial
