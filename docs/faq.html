@@ -18,14 +18,14 @@
             <div class="faq-section">
                 <div class="faq-item">
                     <h3>What types of spatial transcriptomics data does UCASpatial support?</h3>
-                    <p>UCASpatial supports various spatial transcriptomics platforms including 10X Visium, Visium HD, Slide-seq, and MERFISH. It works with both R (Seurat) and Python (AnnData) formats.</p>
+                    <p>UCASpatial supports various spatial transcriptomics platforms, including 10X Visium, Visium HD, and Slide-seq. It works with both R (Seurat) and Python (AnnData) formats.</p>
                 </div>
 
                 <div class="faq-item">
                     <h3>How do I choose the right single-cell reference data?</h3>
                     <p>Choose single-cell reference data that:</p>
                     <ul>
-                        <li>Comes from the same tissue type as your spatial data</li>
+                        <li>Comes from the same tissue type as your spatial data (recommended, but an unpaired reference is also fit)</li>
                         <li>Has high-quality cell type annotations</li>
                         <li>Contains similar cell types expected in your spatial data</li>
                         <li>Has been properly quality-controlled and filtered</li>
@@ -37,10 +37,10 @@
                     <p>Try the following troubleshooting steps:</p>
                     <ul>
                         <li>Check if your reference data matches the tissue type</li>
-                        <li>Ensure proper normalization of both datasets</li>
-                        <li>Verify cell type annotations are accurate</li>
+                        <li>Check the Quality Control Plot (See Tutorial-Visualization)</li>
+                        <li>Verify cell type annotations in the reference are accurate</li>
                         <li>Consider filtering low-quality genes or spots</li>
-                        <li>Try different random seeds for reproducibility</li>
+                        <li>Try different parameters, such as meta.purity, meta.resolution</li>
                     </ul>
                 </div>
 
@@ -53,7 +53,7 @@
                         <li>Number of genes used for deconvolution</li>
                         <li>Computational resources available</li>
                     </ul>
-                    <p>Typical runtime: 10-30 minutes for standard Visium data on a modern laptop.</p>
+                    <p>Typical runtime: 5-30 minutes for standard Visium data on a modern laptop.</p>
                 </div>
 
                 <div class="faq-item">
@@ -70,16 +70,7 @@
                         <li>Intermediate values = mixed cell populations</li>
                     </ul>
                 </div>
-
-                <div class="faq-item">
-                    <h3>What quality metrics should I check?</h3>
-                    <ul>
-                        <li>Reconstruction error: Lower values indicate better fit</li>
-                        <li>Spatial coherence: Cell types should show spatial patterns</li>
-                        <li>Biological validation: Results should match known tissue anatomy</li>
-                        <li>Marker gene expression: Check if known markers match predicted cell types</li>
-                    </ul>
-                </div>
+                
             </div>
         </div>
     </section>
