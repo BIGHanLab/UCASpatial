@@ -4,6 +4,9 @@
 
 Here, we introduce an ultra-resolution ST deconvolution algorithm (UCASpatial) that improves the resolution of mapping cell subpopulations to spatial locations by leveraging the contribution of genes indicative of cell identity through entropy-based weighting. Using both in silico and real ST datasets, we demonstrate that UCASpatial improves the robustness and accuracy in identifying low-abundant cell subpopulations and distinguishing transcriptionally heterogeneous cell subpopulations. 
 
+## Usage and toturial
+The tutorial covering the installation and detailed application of UCASpatial in an example dataset can be found here: https://bighanlab.github.io/UCASpatial/
+
 ## Installation (R)
 You can install the released version of UCASpatial from GitHub by:
 ```R
