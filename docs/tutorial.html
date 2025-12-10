@@ -129,15 +129,10 @@ cell_proportions.to_csv('cell_proportions.csv')</code></pre>
                     <h2>Complete Example: Human Colorectal Cancer Analysis</h2>
                     
                     <h3>Dataset Information</h3>
-                    <p>This example uses human colorectal cancer data from <a href="https://www.nature.com/articles/s41467-022-29366-6" target="_blank">Qi et al, 2022</a>. The dataset includes:</p>
-                    <ul>
-                        <li>Spatial transcriptomics data from colorectal cancer tissue</li>
-                        <li>Single-cell RNA-seq reference with detailed cell type annotations</li>
-                        <li>28 distinct cell types including immune cells, tumor cells, and stromal populations</li>
-                    </ul>
+                    <p>This example uses human colorectal cancer data from <a href="https://www.nature.com/articles/s41467-022-29366-6" target="_blank">Qi et al, 2022</a>.
 
                     <h3>Download Example Data</h3>
-                    <p>Download the example datasets from: <a href="https://zenodo.org/records/12634581" target="_blank">Zenodo Repository</a></p>
+                    <p>Download the example datasets from: <a href="https://zenodo.org/records/12634581?preview=1&token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImU0OGM4YjBjLTliYzQtNDc4ZC05Njg3LTczYTdhOTExNTliNiIsImRhdGEiOnt9LCJyYW5kb20iOiI0ZjYyYzU1OGYwNzc4M2E2NDQ5YWFiMjZkZmY2OGE4NCJ9.qcl1aa2yo6mmdkZXdHw2exPmfhyA7M5oPS1ZoKXbqVpBdQbSWkagYIGL2U3Dhj2ffSde0rhe5MFiuIRYuPC_Vw" target="_blank">Zenodo Repository</a></p>
 
                     <h3>Load and Explore Data</h3>
                     <pre><code class="language-r"># Load required libraries
@@ -231,14 +226,7 @@ p <- dot_plot_profiles_fun(
     UCASpatial_result[[1]][[1]]@h,
     UCASpatial_result[[1]][[2]]
 )[2]
-print(p)
-
-# Check reconstruction quality
-reconstruction_error <- UCASpatial_result[[1]][[3]]
-print(paste("Reconstruction error:", reconstruction_error))
-
-# The QC plot shows how well cell type signatures are preserved during deconvolution
-# Lower reconstruction error indicates better deconvolution quality</code></pre>
+print(p)</code></pre>
 
                     <div class="result-image">
                         <h4>Quality Control Plot Example:</h4>
@@ -296,27 +284,9 @@ plot_list</code></pre>
                         <img src="https://github.com/BIGHanLab/UCASpatial/raw/main/docs/documentation/Cell_type_distributions_UCASpatial.png" 
                              alt="Cell Type Distributions" 
                              style="max-width: 800px; width: 100%; height: auto;">
-                        <p><em>Spatial distribution of selected cell types in colorectal cancer tissue. Red intensity indicates the proportion of each cell type at each spatial location.</em></p>
+                        <p><em>Spatial distribution of selected cell types in colorectal cancer tissue. Color indicates the proportion of each cell type at each spatial location.</em></p>
                         <p><strong>Data Source:</strong> <a href="https://github.com/BIGHanLab/UCASpatial/blob/main/docs/documentation/Cell_type_distributions_UCASpatial.png" 
                                                            target="_blank">View on GitHub</a></p>
-                    </div>
-
-                    <h3>Interpretation of Results</h3>
-                    <div class="interpretation-guide">
-                        <h4>Key Findings from Colorectal Cancer Analysis:</h4>
-                        <ul>
-                            <li><strong>Immune Cell Infiltration:</strong> CD8+ T cells and NK cells show distinct spatial patterns in tumor tissue</li>
-                            <li><strong>Fibroblast Distribution:</strong> FAP+ myofibroblasts are enriched in specific tumor regions</li>
-                            <li><strong>Tumor Heterogeneity:</strong> Different epithelial subpopulations show spatial segregation</li>
-                            <li><strong>Microenvironment Architecture:</strong> Clear spatial organization of immune and stromal components</li>
-                        </ul>
-
-                        <h4>Clinical Relevance:</h4>
-                        <ul>
-                            <li>Spatial distribution of immune cells may correlate with treatment response</li>
-                            <li>Fibroblast patterns could indicate tumor aggressiveness</li>
-                            <li>Epithelial heterogeneity reflects tumor evolution and progression</li>
-                        </ul>
                     </div>
                 </section>
 
@@ -356,19 +326,19 @@ UCASpatial_result <- UCASpatial_HD_deconv(
                     
                     <h3>Understanding Outputs</h3>
                     <div class="output-explanation">
-                        <h4>UCASpatial_result Structure</h4>
+                        <h4>Cell Proportion Matrix</h4>
                         <ul>
-                            <li><code>UCASpatial_result[[1]]</code>: Contains evaluation metrics and quality assessments</li>
-                            <li><code>UCASpatial_result[[2]]</code>: Raw deconvolution matrix (cell type proportions)</li>
-                            <li><code>UCASpatial_result[[3]]</code>: Reconstruction error and other quality metrics</li>
+                            <li>Rows: spatial spots/barcodes</li>
+                            <li>Columns: cell types</li>
+                            <li>Values: estimated proportion of each cell type (0-1)</li>
                         </ul>
 
-                        <h4>Quality Control Metrics</h4>
+                        <h4>NMF Components</h4>
                         <ul>
-                            <li><strong>Reconstruction Error:</strong> Lower values indicate better deconvolution quality</li>
-                            <li><strong>Dot Plot Profiles:</strong> Show how well cell type signatures are preserved</li>
-                            <li><strong>Spatial Coherence:</strong> Results should match expected tissue anatomy</li>
+                            <li>Represents gene expression programs for each cell type</li>
+                            <li>Can be used to identify cell-type specific genes</li>
                         </ul>
+                        
                     </div>
                 </section>
             </div>
