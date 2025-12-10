@@ -160,7 +160,7 @@ p <- dot_plot_profiles_fun(
 print(p)
 ```
 Here is an example output: 
-![Example_Dotplot](docs/documentation/QC_plot_UCASpatial.png)
+![Example_Dotplot](QC_plot_UCASpatial.png)
 
 ### Visualization of cell type distributions
 ```r
@@ -199,4 +199,4 @@ plot_list <- Seurat::SpatialFeaturePlot(
 plot_list
 ```
 Here is an example output: 
-![Example_Spatial plot](docs/documentation/Cell_type_distributions_UCASpatial.png)
+![Example_Spatial plot](Cell_type_distributions_UCASpatial.png)
