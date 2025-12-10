@@ -80,6 +80,7 @@ UCASpatial_result <- UCASpatial_deconv(
 decon_matr <- as.matrix(UCASpatial_result[[2]])
 cell_proportions <- decon_matr[,1:(ncol(decon_matr)-1)]
 cell_proportions <- cell_proportions/rowSums(cell_proportions)</code></pre>
+rownames(cell_proportions) <- colnames(st_vis)
 
                     <h3>Python Implementation</h3>
                     <pre><code class="language-python">import UCASpatial_ds_R1
@@ -150,7 +151,8 @@ st_vis@meta.data <- st_vis@meta.data %>%
 # Create assay for cell type proportions
 Annotation_assay <- CreateAssayObject(t(cell_proportions))
 st_vis@assays$Annotation <- Annotation_assay
-
+st_vis@assays$Annotation@key <- "annatation_"
+    
 # Plot cell type distributions
 cell_types_all <- colnames(cell_proportions)
 plot_list <- Seurat::SpatialFeaturePlot(
@@ -162,7 +164,8 @@ plot_list <- Seurat::SpatialFeaturePlot(
 )
 
 # Combine plots
-combined_plot <- patchwork::wrap_plots(plot_list, ncol = 3)</code></pre>
+combined_plot <- patchwork::wrap_plots(plot_list, ncol = 3)
+combined_plot</code></pre>
 
                     <h3>Quality Control Plot</h3>
                     <pre><code class="language-r"># Generate evaluation plot
