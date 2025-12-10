@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UCASpatial - Ultra-resolution Spatial Transcriptomics Deconvolution</title>
+    <title>UCASpatial - Ultra-precision Cellular Annotation in Spatial Transcriptomics</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -26,7 +26,7 @@
     <section id="home" class="hero">
         <div class="hero-content">
             <h1>UCASpatial</h1>
-            <h2>Ultra-resolution Deconvolution of Spatial Transcriptomics</h2>
+            <h2>Ultra-precision Deconvolution of Spatial Transcriptomics</h2>
             <p>Unveiling Spatiotemporal Cellular Dynamics in Complex Microenvironments</p>
             <div class="cta-buttons">
                 <a href="installation.html" class="btn-primary">Get Started</a>
@@ -41,8 +41,8 @@
             <h2>Key Features</h2>
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h3>Ultra-resolution</h3>
-                    <p>Improves resolution of mapping cell subpopulations to spatial locations</p>
+                    <h3>Ultra-precision</h3>
+                    <p>Improves precision of mapping cell subpopulations to spatial locations</p>
                 </div>
                 <div class="feature-card">
                     <h3>Entropy-based Weighting</h3>
@@ -69,7 +69,7 @@
 devtools::install_github('https://github.com/BIGHanLab/UCASpatial/')
 
 # Load data
-sc_ref <- readRDS("path/to/sc_reference.rds")
+sc_ref <- readRDS("path/to/sc_reference.rds")  # cluster info in 'sc.ref$celltype'
 st_vis <- readRDS("path/to/st_data.rds")
 
 # Run UCASpatial
