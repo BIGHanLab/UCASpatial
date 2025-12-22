@@ -37,6 +37,7 @@
 #' @param ent.filter.threshold optional: parameter for filter low quality features based on entropy.
 #' @param cos.filter.threshold optional: parameter for filter low quality features based on cosine similarity.
 #' @param weight.filter.threshold optional: parameter for filter low quality features based on weight.
+#' @param weight.strategy optional: parameter for selecting the weighting strategy, including 'ent','mi','var'. By default is 'ent'.
 #'
 #'
 #' @importFrom dplyr %>%
@@ -44,14 +45,15 @@
 #' @export
 
 UCASpatial_HD_deconv <- function (sc_ref, st_vis, clust_vr,spatial.assay='Spatial.008um',
-                           assay = "RNA", slot = "data",output_path = NULL,
-                           cluster_markers = NULL,min.pct = 0.2,logfc.threshold = 0.25,min.diff.pct = 0.1,
-                           normalize = 'uv',downsample_n = 1 , n_cluster = 100,n_top = NULL,
-                           remove.RPL=F,remove.MT=F,rowname_st_vis=NULL,
-                           cos.filter = T,cos.mu=1,cos.n_genes_user=900,marker.slot = 'data',
-                           min_cont = 0.01,unit = "log2",random.seed = 10000,meta.filter = T,nmf.tol=1e-04,
-                           meta.assay = 'integrated',meta.ndims = 30,meta.resolution = 100,meta.purity = 0.95,
-                           ent.filter.threshold = 0.5,cos.filter.threshold = 0.05,weight.filter.threshold = 0.2)
+                                  assay = "RNA", slot = "data",output_path = NULL,
+                                  cluster_markers = NULL,min.pct = 0.2,logfc.threshold = 0.25,min.diff.pct = 0.1,
+                                  normalize = 'uv',downsample_n = 1 , n_cluster = 100,n_top = NULL,
+                                  remove.RPL=F,remove.MT=F,rowname_st_vis=NULL,
+                                  weight.strategy = 'ent',
+                                  cos.filter = T,cos.mu=1,cos.n_genes_user=900,marker.slot = 'data',
+                                  min_cont = 0.01,unit = "log2",random.seed = 10000,meta.filter = T,nmf.tol=1e-04,
+                                  meta.assay = 'integrated',meta.ndims = 30,meta.resolution = 100,meta.purity = 0.95,
+                                  ent.filter.threshold = 0.5,cos.filter.threshold = 0.05,weight.filter.threshold = 0.2)
 {
   # Step0: Preprocess
   cat("Load required packages...\n")
@@ -124,13 +126,13 @@ UCASpatial_HD_deconv <- function (sc_ref, st_vis, clust_vr,spatial.assay='Spatia
   if(meta.filter == T)
   {
     sc_ref <- meta_filter_HD(sc_ref = sc_ref,meta.assay = meta.assay,assay = assay,output_path = output_path,clust_vr,
-                          meta.purity = meta.purity,meta.resolution = meta.resolution,meta.ndims = meta.ndims)
+                             meta.purity = meta.purity,meta.resolution = meta.resolution,meta.ndims = meta.ndims)
   }
   ## Step0.2  Downsample the sc_ref data by min.varience
   if(downsample_n != 0){
     cat("Step0.2  Downsample the sc_ref data by min.varience.....\n")
     sc_ref_down <- UCASpatial_HD_downsample(sc_ref = sc_ref,clust_vr = clust_vr,random.seed = random.seed,
-                                     downsample_n = downsample_n,n_cluster = n_cluster,assay = assay,slot = 'counts')
+                                            downsample_n = downsample_n,n_cluster = n_cluster,assay = assay,slot = 'counts')
     cat(paste("Auto save the downsampled sc_ref under the path:\n",output_path,"/sc_ref_down.rds\n",sep = ""))
     saveRDS(sc_ref_down,paste(output_path,"/sc_ref_down.rds",sep = ""))
     sc_ref <- sc_ref_down
@@ -159,19 +161,55 @@ UCASpatial_HD_deconv <- function (sc_ref, st_vis, clust_vr,spatial.assay='Spatia
   #   stop("ERROR: Missing correspondence information for 'cluster_markers'\n")
   if (is.null(cluster_markers$weight))
   {
-    cat("Step1.2  Calculate the entropy-based weight.............\n")
-    if (is.null(cluster_markers$avg_logFC))
-      cluster_markers <- cluster_markers %>% rename(avg_logFC = avg_log2FC)
-    cluster_markers %>% dplyr::count(cluster)
-    cluster_markers <-
-      CalculateEntropy(
-        sc_ref,
-        cluster_markers,
-        assay = assay,
-        slot = marker.slot,
-        unit = unit
-      )
-    # saveRDS(cluster_markers, paste(output_path, "/cluster_markers_ent.rds", sep = ""))
+    if(weight.strategy == 'ent')
+    {
+      cat("Step1.2  Calculate the entropy-based weight.............\n")
+      if (is.null(cluster_markers$avg_logFC))
+        cluster_markers <- cluster_markers %>% rename(avg_logFC = avg_log2FC)
+      cluster_markers %>% dplyr::count(cluster)
+      cluster_markers <-
+        CalculateEntropy(
+          sc_ref,
+          cluster_markers,
+          assay = assay,
+          slot = marker.slot,
+          unit = unit
+        )
+      # saveRDS(cluster_markers, paste(output_path, "/cluster_markers_ent.rds", sep = ""))
+    }
+    else if(weight.strategy == 'mi')
+    {
+      cat("Step1.2  Calculate the mutual information-based weight.............\n")
+      if (is.null(cluster_markers$avg_logFC))
+        cluster_markers <- cluster_markers %>% rename(avg_logFC = avg_log2FC)
+      cluster_markers %>% dplyr::count(cluster)
+      cluster_markers <-
+        CalculateMIWeight(
+          sc_ref,
+          cluster_markers,
+          assay = assay,
+          slot = marker.slot,
+          unit = unit
+        )
+      cluster_markers_var$ent.adj <- 1
+    }
+    else if(weight.strategy == 'var')
+    {
+      cat("Step1.2  Calculate the variance-based weight.............\n")
+      if (is.null(cluster_markers$avg_logFC))
+        cluster_markers <- cluster_markers %>% rename(avg_logFC = avg_log2FC)
+      cluster_markers %>% dplyr::count(cluster)
+      cluster_markers <-
+        CalculateVarianceWeight(
+          sc_ref,
+          cluster_markers,
+          assay = assay,
+          slot = marker.slot
+        )
+      cluster_markers_var$ent.adj <- 1
+    }
+    else
+      cat('Error: "weight.strategy" must be one of "ent", "mi", or "var".')
     if(cos.filter == T)
     {
       # Calculate the cosine score as the weight
@@ -217,20 +255,20 @@ UCASpatial_HD_deconv <- function (sc_ref, st_vis, clust_vr,spatial.assay='Spatia
   #### Step2: Train the nsNMF model ####
   cat('Step2  Train the nsNMF model............................\n')
   nsnmf_mod <- train_nsnmfmod_HD(sc_ref = sc_ref, st_vis_matr = st_vis_matr,
-                              cluster_markers = cluster_markers, clust_vr = clust_vr,
-                              n_top = n_top, assay = assay, slot = slot,nmf.tol=nmf.tol)
+                                 cluster_markers = cluster_markers, clust_vr = clust_vr,
+                                 n_top = n_top, assay = assay, slot = slot,nmf.tol=nmf.tol)
 
   #### Step3: Calculate the cluster-topic profile ####
   cat('Step3  Calculate the cluster-topic profile..............\n')
   clus_topic_profile <- topic_profile_per_cluster_nmf(h = nsnmf_mod[[1]]@h,
-                                                                 train_cell_clust = nsnmf_mod[[2]])
+                                                      train_cell_clust = nsnmf_mod[[2]])
   ## temp for test::
   # return(nsnmf_mod)
   #### Step4: Use entropy-based weighted-NNLS to implement the deconvolution ####
   cat('Step4  Weighted-NNLS to implement the deconvolution.....\n')
   decon_matr <- UCASpatial_HD_deconvolution_nmf(nmf_mod = nsnmf_mod[[1]], cluster_markers = cluster_markers,
-                                         mixture_transcriptome = st_vis_matr, normalize = normalize,
-                                         reference_profiles = clus_topic_profile, min_cont = min_cont)
+                                                mixture_transcriptome = st_vis_matr, normalize = normalize,
+                                                reference_profiles = clus_topic_profile, min_cont = min_cont)
   return(list(nsnmf_mod, decon_matr))
 }
 
@@ -336,7 +374,7 @@ init_nmf_matr_HD <- function (cluster_markers, sc_ref, clust_vr,assay = "RNA", s
                                    ls1_unique <- ls1[!ls1 %in% ls2]
                                    return(cluster_markers_cut[cluster_markers_cut$cluster ==
                                                                 clust & cluster_markers_cut$gene %in% ls1_unique,
-                                                              ])
+                                   ])
                                  }) %>% bind_rows()
   seedgenes <- matrix(nrow = k, ncol = ncol(sc_nmf_ready),
                       data = 1e-10)
@@ -365,7 +403,7 @@ train_nsnmfmod_HD <- function(sc_ref,st_vis_matr,cluster_markers,clust_vr,n_top 
   library(RcppML)
   print("Preparing Gene set")
   sc_ref_matr <- as.matrix(Seurat::GetAssayData(sc_ref, assay = assay,
-                                            slot = slot))
+                                                slot = slot))
   # fliter the genes with no expression in sc_ref and st_vis data
   sc_noexp_gene <- which(!Matrix::rowSums(sc_ref_matr == 0) == ncol(sc_ref_matr))
   sc_ref <- sc_ref[sc_noexp_gene, ]
@@ -384,7 +422,7 @@ train_nsnmfmod_HD <- function(sc_ref,st_vis_matr,cluster_markers,clust_vr,n_top 
     cat("Warring: The overlaped genes between sc_ref and st_vis is less than 10.\n")
   sc_ref <- sc_ref[intersect(sc_genes, st_genes), ]
   sc_ref_matr <- as.matrix(Seurat::GetAssayData(sc_ref, assay = assay,
-                                            slot = slot))
+                                                slot = slot))
   cluster_markers <- cluster_markers[cluster_markers$gene %in%
                                        rownames(sc_ref), ]
 
@@ -415,7 +453,7 @@ train_nsnmfmod_HD <- function(sc_ref,st_vis_matr,cluster_markers,clust_vr,n_top 
 predict_spatial_mixtures_nmf_weighted_HD <- function (nmf_mod, cluster_markers, mixture_transcriptome, normalize)
 {
   keep_genes <- rownames(nmf_mod@w)[rownames(nmf_mod@w) %in%
-                                           rownames(mixture_transcriptome)]
+                                      rownames(mixture_transcriptome)]
   start_t <- Sys.time()
   mixture_transcriptome_subs <- as.matrix(mixture_transcriptome[keep_genes,])
   {
@@ -468,16 +506,16 @@ predict_spatial_mixtures_nmf_weighted_HD <- function (nmf_mod, cluster_markers, 
 
 # Run mixtures through the NMF model to get the cell type composition.
 UCASpatial_HD_deconvolution_nmf <- function(nmf_mod,
-                                     cluster_markers,
-                                     mixture_transcriptome,
-                                     normalize,
-                                     reference_profiles,
-                                     min_cont = 0.01)
+                                            cluster_markers,
+                                            mixture_transcriptome,
+                                            normalize,
+                                            reference_profiles,
+                                            min_cont = 0.01)
 {
   profile_matr <- predict_spatial_mixtures_nmf_weighted_HD(nmf_mod = nmf_mod,
-                                                        cluster_markers = cluster_markers,
-                                                        mixture_transcriptome = mixture_transcriptome,
-                                                        normalize = normalize)
+                                                           cluster_markers = cluster_markers,
+                                                           mixture_transcriptome = mixture_transcriptome,
+                                                           normalize = normalize)
 
   # We add 1 extra column to add the residual error
   decon_matr <- matrix(data = NA,
@@ -624,6 +662,87 @@ CalculateEntropy <- function(object,features,assay = "RNA",slot = "data",unit = 
 
 }
 
+CalculateVarianceWeight <- function(object, features, assay = "RNA", slot = "data") {
+  library(entropy) # 用于后续改动时计算互信息，variance部分不强制需要，可删
+
+  colnames(features) <- c("p_val", "avg_logFC", "pct.1", "pct.2", "p_val_adj", "cluster", "gene")
+
+  data.use <- Seurat::GetAssayData(object = object, slot = slot, assay = assay)
+  genes <- features$gene
+
+  # 按群组计算每个基因表达均值
+  group_levels <- levels(Idents(object))
+  expr_means <- sapply(group_levels, function(clst) {
+    cells <- WhichCells(object, idents = clst)
+    Matrix::rowMeans(data.use[genes, cells, drop = FALSE])
+  })
+  rownames(expr_means) <- genes
+
+  # 对每个基因计算在不同类型表达均值的方差作为权重主依据
+  gene_variances <- apply(expr_means, 1, var)
+
+  # 标准化方差权重到0-1
+  gene_variances_scaled <- (gene_variances - min(gene_variances)) / (max(gene_variances) - min(gene_variances) + 1e-10)
+
+  # 构造输出表，保持原有列结构，替换权重列为variance权重
+  features$weight <- 0
+  features$var_weight <- 0
+  for (i in seq_len(nrow(features))) {
+    gene_i <- features$gene[i]
+    if (gene_i %in% names(gene_variances_scaled)) {
+      features$var_weight[i] <- gene_variances_scaled[gene_i]
+      # 结合avg_logFC和pct.1等调整权重（可视需求修改权重组合公式）
+      features$weight[i] <- features$var_weight[i] * features$avg_logFC[i] * features$pct.1[i]
+    } else {
+      features$weight[i] <- 0
+      features$var_weight[i] <- 0
+    }
+    # 限制权重上限
+    if (features$weight[i] > 1) features$weight[i] <- 1
+  }
+  return(features)
+}
+
+CalculateMIWeight <- function(object, features, assay = "RNA", slot = "data", unit = "log2") {
+  library(entropy)
+  colnames(features) <- c("p_val", "avg_logFC", "pct.1", "pct.2", "p_val_adj", "cluster", "gene")
+  data.use <- Seurat::GetAssayData(object = object, slot = slot, assay = assay)
+  genes <- features$gene
+  group_labels <- as.character(Idents(object))
+
+  # 计算每个基因表达的离散化表示（以counts>0为二值表达），计算基因表达与类别的互信息
+  gene_mi <- sapply(genes, function(g) {
+    expr_vec <- as.numeric(data.use[g, ])
+    binary_expr <- as.integer(expr_vec > 0)
+    joint_table <- table(binary_expr, group_labels)
+    mi <- tryCatch({
+      entropy::mi.empirical(joint_table, unit = unit)
+    }, error = function(e) NA)
+    if (is.na(mi)) mi <- 0
+    return(mi)
+  })
+
+  # 标准化MI权重0-1
+  gene_mi_scaled <- (gene_mi - min(gene_mi)) / (max(gene_mi) - min(gene_mi) + 1e-10)
+
+  # 构造输出表，替换权重为MI加权
+  features$weight <- 0
+  features$mi_weight <- 0
+  for (i in seq_len(nrow(features))) {
+    gene_i <- features$gene[i]
+    if (gene_i %in% names(gene_mi_scaled)) {
+      features$mi_weight[i] <- gene_mi_scaled[gene_i]
+      features$weight[i] <- features$mi_weight[i] * features$avg_logFC[i] * features$pct.1[i]
+    } else {
+      features$weight[i] <- 0
+      features$mi_weight[i] <- 0
+    }
+    if (features$weight[i] > 1) features$weight[i] <- 1
+  }
+  return(features)
+}
+
+
 
 # SPOTlight functions
 topic_profile_per_cluster_nmf <- function (h, train_cell_clust)
@@ -663,7 +782,7 @@ seed_init_mtrx_nmf <- function (cluster_markers, sc_ref, clust_vr, ntop = NULL)
                                    ls1_unique <- ls1[!ls1 %in% ls2]
                                    return(cluster_markers_cut[cluster_markers_cut$cluster ==
                                                                 clust & cluster_markers_cut$gene %in% ls1_unique,
-                                                              ])
+                                   ])
                                  }) %>% bind_rows()
   seedgenes <- matrix(nrow = k, ncol = ncol(sc_nmf_ready),
                       data = 1e-10)
