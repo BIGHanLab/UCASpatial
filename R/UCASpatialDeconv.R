@@ -35,6 +35,7 @@
 #' @param ent.filter.threshold optional: parameter for filter low quality features based on entropy.
 #' @param cos.filter.threshold optional: parameter for filter low quality features based on cosine similarity.
 #' @param weight.filter.threshold optional: parameter for filter low quality features based on weight.
+#' @param weight.strategy optional: parameter for selecting the weighting strategy, including 'ent','mi','var'. By default is 'ent'.
 #'
 #' @importFrom dplyr %>%
 #' @return a list including NMF result and deconvolution result
@@ -44,7 +45,7 @@
 UCASpatial_deconv <- function (sc_ref, st_vis, clust_vr, assay = "RNA", slot = "data",output_path = NULL,
                            cluster_markers = NULL,min.pct = 0.2,logfc.threshold = 0.25,min.diff.pct = 0.1,
                            normalize = 'uv',downsample_n = 1 , n_cluster = 100,n_top = NULL,
-                           remove.RPL=F,remove.MT=F,
+                           remove.RPL=F,remove.MT=F,weight.strategy='ent',
                            cos.filter = T,cos.mu=1,cos.n_genes_user=900,marker.slot = 'data',
                            min_cont = 0.01,unit = "log2",random.seed = 10000,meta.filter = T,nmf.tol=1e-04,
                            meta.assay = 'integrated',meta.ndims = 30,meta.resolution = 100,meta.purity = 0.95,
@@ -150,19 +151,55 @@ UCASpatial_deconv <- function (sc_ref, st_vis, clust_vr, assay = "RNA", slot = "
   #   stop("ERROR: Missing correspondence information for 'cluster_markers'\n")
   if (is.null(cluster_markers$weight))
   {
-    cat("Step1.2  Calculate the entropy-based weight.............\n")
-    if (is.null(cluster_markers$avg_logFC))
-      cluster_markers <- cluster_markers %>% rename(avg_logFC = avg_log2FC)
-    cluster_markers %>% dplyr::count(cluster)
-    cluster_markers <-
-      CalculateEntropy(
-        sc_ref,
-        cluster_markers,
-        assay = assay,
-        slot = marker.slot,
-        unit = unit
-      )
-    # saveRDS(cluster_markers, paste(output_path, "/cluster_markers_ent.rds", sep = ""))
+    if(weight.strategy == 'ent')
+    {
+      cat("Step1.2  Calculate the entropy-based weight.............\n")
+      if (is.null(cluster_markers$avg_logFC))
+        cluster_markers <- cluster_markers %>% rename(avg_logFC = avg_log2FC)
+      cluster_markers %>% dplyr::count(cluster)
+      cluster_markers <-
+        CalculateEntropy(
+          sc_ref,
+          cluster_markers,
+          assay = assay,
+          slot = marker.slot,
+          unit = unit
+        )
+      # saveRDS(cluster_markers, paste(output_path, "/cluster_markers_ent.rds", sep = ""))
+    }
+    else if(weight.strategy == 'mi')
+    {
+      cat("Step1.2  Calculate the mutual information-based weight.............\n")
+      if (is.null(cluster_markers$avg_logFC))
+        cluster_markers <- cluster_markers %>% rename(avg_logFC = avg_log2FC)
+      cluster_markers %>% dplyr::count(cluster)
+      cluster_markers <-
+        CalculateMIWeight(
+          sc_ref,
+          cluster_markers,
+          assay = assay,
+          slot = marker.slot,
+          unit = unit
+        )
+      cluster_markers_var$ent.adj <- 1
+    }
+    else if(weight.strategy == 'var')
+    {
+      cat("Step1.2  Calculate the variance-based weight.............\n")
+      if (is.null(cluster_markers$avg_logFC))
+        cluster_markers <- cluster_markers %>% rename(avg_logFC = avg_log2FC)
+      cluster_markers %>% dplyr::count(cluster)
+      cluster_markers <-
+        CalculateVarianceWeight(
+          sc_ref,
+          cluster_markers,
+          assay = assay,
+          slot = marker.slot
+        )
+      cluster_markers_var$ent.adj <- 1
+    }
+    else
+      cat('Error: "weight.strategy" must be one of "ent", "mi", or "var".')
     if(cos.filter == T)
     {
       # Calculate the cosine score as the weight
@@ -516,6 +553,184 @@ UCASpatial_deconvolution_nmf <- function(nmf_mod,
 
 
 
+
+CalculateEntropy <- function(object,features,assay = "RNA",slot = "data",unit = "log2")
+{
+  library(entropy)
+  # 01 Get the candidate features
+  features_raw <- features
+  # library(SeuratObject)
+  colnames(features_raw) <- c("p_val","avg_logFC","pct.1","pct.2","p_val_adj","cluster","gene")
+
+  data.use <- Seurat::GetAssayData(object = object ,  slot = slot,assay = assay)
+
+  features <- features$gene
+  # features <- features %||% rownames(x = data.use)
+  thresh.min <- 0
+  # library(pacman)
+  # p_unload(Seurat)
+  # # p_unload(SeuratObject)
+  # p_load(Seurat)
+
+  # 02 Construct the features expression percentage of each cell type
+  pct <- as.data.frame(features)
+  tot = 1
+  for(cells.t in levels(Idents(object)))
+  {
+    cells.t.name <- WhichCells(object,idents = cells.t)
+    pct.1 <- round(x = Matrix::rowSums(x = data.use[features, cells.t.name, drop = FALSE] > thresh.min) / length(x = cells.t.name),
+                   digits = 3)
+    pct<- cbind(pct,pct.1)
+    tot = tot + 1
+  }
+  all(features %in% rownames(data.use))
+
+  # 03 Calculate the entropy of each feature
+  pct.uq <- unique(pct)
+  rownames(pct.uq) <- pct.uq$features
+  pct.data <- pct.uq[, 1:length(levels(Idents(object))) + 1]
+
+  colnames(pct.data) <- levels(Idents(object))
+  ent.data <- pct.data/base::rowSums(pct.data)
+  colnames(ent.data) <- levels(Idents(object))
+
+  # 03.1 filter the cluster corresponding to gene which has the max pct*log2(avg_logFC+1)
+  features_max_avgLogFC <- features_raw %>%
+    group_by(gene) %>%
+    mutate(pre_weight = log2(pct.1+1) * log2(avg_logFC + 1)) %>%
+    dplyr::arrange(-pre_weight, .by_group = T) %>%
+    top_n(n = 1, wt = pre_weight) %>%
+    top_n(n = 1, wt = -p_val)
+  if(sum(duplicated(features_max_avgLogFC$gene))!=0)
+    features_max_avgLogFC <- features_max_avgLogFC[-which(duplicated(features_max_avgLogFC$gene)),]
+
+  ent.result <- data.frame(gene = character(),entropy= numeric(),entropy.adjust= numeric(),pct= numeric(),cluster= character(), stringsAsFactors=F)
+  entropy.max = entropy::entropy(c(rep(1,length(levels(Idents(object))))),unit = unit)
+  pb <- txtProgressBar(style=3)
+  for(i in 1:nrow(features_max_avgLogFC)){
+    ent.result[i,1] <- rownames(ent.data)[i]
+    ent.result[i,2] <- entropy::entropy(as.numeric(ent.data[i,]),unit = unit)
+    ent.result[i,3] <- entropy.max - ent.result[i,2]
+    ent.result[i,4] <- max(pct.data[i,])
+    ent.result[i,5] <- as.character(features_max_avgLogFC$cluster[which(features_max_avgLogFC$gene == rownames(ent.data)[i])[1]])
+    setTxtProgressBar(pb, i/length(rownames(pct.uq)))
+  }
+  close(pb)
+
+  cat('\n')
+  # 04 Calculate the weight of each feature based on the entropy, pct and avg_logFC
+  ent.result.rank <- ent.result %>%
+    group_by(gene) %>%
+    dplyr::arrange(gene,.by_group = T)
+
+  ent.result.rank$avg_logFC <- features_max_avgLogFC$avg_logFC
+
+  # 20220623: Remove Inf in avg_logFC, replace with max avg_logFC
+  max_avg_logFC <- max(ent.result.rank$avg_logFC[which(ent.result.rank$avg_logFC != Inf)])
+  ent.result.rank$avg_logFC[which(ent.result.rank$avg_logFC == Inf)] <- max_avg_logFC
+
+  ent.result.rank <- ent.result.rank %>%
+    mutate(weight = entropy.adjust * pct * avg_logFC)%>%
+    group_by(cluster) %>%
+    dplyr::arrange(-weight,.by_group = T)
+  rownames(ent.result.rank) <- ent.result.rank$gene
+
+  # 05 Rescue the duplicate features among all cell types
+  features_new <- features_raw
+  features_new$ent.adj <- 0
+  features_new$weight <- 0
+  features_new$avg_logFC[which(features_new$avg_logFC == Inf)] <- max_avg_logFC
+  cat('\n')
+  for(i in 1:nrow(features_new))
+  {
+    features_new$ent.adj[i] <- ent.result.rank$entropy.adjust[which(ent.result.rank$gene == features_new$gene[i])[1]]
+    features_new$weight[i] <- 4* features_new$ent.adj[i]/entropy.max * features_new$pct.1[i] * features_new$avg_logFC[i]
+    if(features_new$weight[i] > 1 )
+      features_new$weight[i] <- 1
+  }
+  return(features_new)
+
+}
+
+CalculateVarianceWeight <- function(object, features, assay = "RNA", slot = "data") {
+  library(entropy) # 用于后续改动时计算互信息，variance部分不强制需要，可删
+
+  colnames(features) <- c("p_val", "avg_logFC", "pct.1", "pct.2", "p_val_adj", "cluster", "gene")
+
+  data.use <- Seurat::GetAssayData(object = object, slot = slot, assay = assay)
+  genes <- features$gene
+
+  # 按群组计算每个基因表达均值
+  group_levels <- levels(Idents(object))
+  expr_means <- sapply(group_levels, function(clst) {
+    cells <- WhichCells(object, idents = clst)
+    Matrix::rowMeans(data.use[genes, cells, drop = FALSE])
+  })
+  rownames(expr_means) <- genes
+
+  # 对每个基因计算在不同类型表达均值的方差作为权重主依据
+  gene_variances <- apply(expr_means, 1, var)
+
+  # 标准化方差权重到0-1
+  gene_variances_scaled <- (gene_variances - min(gene_variances)) / (max(gene_variances) - min(gene_variances) + 1e-10)
+
+  # 构造输出表，保持原有列结构，替换权重列为variance权重
+  features$weight <- 0
+  features$var_weight <- 0
+  for (i in seq_len(nrow(features))) {
+    gene_i <- features$gene[i]
+    if (gene_i %in% names(gene_variances_scaled)) {
+      features$var_weight[i] <- gene_variances_scaled[gene_i]
+      # 结合avg_logFC和pct.1等调整权重（可视需求修改权重组合公式）
+      features$weight[i] <- features$var_weight[i] * features$avg_logFC[i] * features$pct.1[i]
+    } else {
+      features$weight[i] <- 0
+      features$var_weight[i] <- 0
+    }
+    # 限制权重上限
+    if (features$weight[i] > 1) features$weight[i] <- 1
+  }
+  return(features)
+}
+
+CalculateMIWeight <- function(object, features, assay = "RNA", slot = "data", unit = "log2") {
+  library(entropy)
+  colnames(features) <- c("p_val", "avg_logFC", "pct.1", "pct.2", "p_val_adj", "cluster", "gene")
+  data.use <- Seurat::GetAssayData(object = object, slot = slot, assay = assay)
+  genes <- features$gene
+  group_labels <- as.character(Idents(object))
+
+  # 计算每个基因表达的离散化表示（以counts>0为二值表达），计算基因表达与类别的互信息
+  gene_mi <- sapply(genes, function(g) {
+    expr_vec <- as.numeric(data.use[g, ])
+    binary_expr <- as.integer(expr_vec > 0)
+    joint_table <- table(binary_expr, group_labels)
+    mi <- tryCatch({
+      entropy::mi.empirical(joint_table, unit = unit)
+    }, error = function(e) NA)
+    if (is.na(mi)) mi <- 0
+    return(mi)
+  })
+
+  # 标准化MI权重0-1
+  gene_mi_scaled <- (gene_mi - min(gene_mi)) / (max(gene_mi) - min(gene_mi) + 1e-10)
+
+  # 构造输出表，替换权重为MI加权
+  features$weight <- 0
+  features$mi_weight <- 0
+  for (i in seq_len(nrow(features))) {
+    gene_i <- features$gene[i]
+    if (gene_i %in% names(gene_mi_scaled)) {
+      features$mi_weight[i] <- gene_mi_scaled[gene_i]
+      features$weight[i] <- features$mi_weight[i] * features$avg_logFC[i] * features$pct.1[i]
+    } else {
+      features$weight[i] <- 0
+      features$mi_weight[i] <- 0
+    }
+    if (features$weight[i] > 1) features$weight[i] <- 1
+  }
+  return(features)
+}
 
 
 
