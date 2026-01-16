@@ -25,6 +25,6 @@ Imports: Seurat, RcppML, nnls, Matrix, dplyr, tibble, tidyr, edgeR,
         ggplot2, matrixStats, stringr, scatterpie, proxyC, jpeg, png
 RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2026-01-16 08:27:40 UTC; xy
+Packaged: 2026-01-16 08:33:59 UTC; xy
 Author: Yin Xu [aut, cre],
   Dali Han [aut]
