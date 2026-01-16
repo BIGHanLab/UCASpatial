@@ -107,7 +107,7 @@ UCASpatial_deconv_Seuratv5 <- function (sc_ref, st_vis, clust_vr, assay = "RNA",
     st_vis <- st_vis_filtered
     st_vis_matr <- st_vis@assays$Spatial@layers$counts
   }
-
+  rownames(st_vis_matr) <- rownames(st_vis)
   DefaultAssay(sc_ref) <- assay
   #### Step0: Preprocess the sc_ref data. ####
   cat("Step0    Preprocess the sc_ref data.....................\n")
