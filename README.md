@@ -10,7 +10,7 @@ The tutorial covering the installation and detailed application of UCASpatial in
 ## Installation (R)
 You can install the released version of UCASpatial from GitHub by:
 ```R
-devtools::install_github('https://github.com/BIGHanLab/UCASpatial/tree/UCASpatial_v1.4.0')
+devtools::install_github('https://github.com/BIGHanLab/UCASpatial/tree/UCASpatial_v1.6.0')
 ```
 You can also install the released version of UCASpatial from GitHub by download the 'UCASpatial_v1.R', and then source it in Rstudio on your own working direction.
 ```R
