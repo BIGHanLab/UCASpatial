@@ -42,7 +42,7 @@
 #' @export
 
 
-UCASpatial_deconv <- function (sc_ref, st_vis, clust_vr, assay = "RNA", slot = "data",output_path = NULL,
+UCASpatial_deconv_Seuratv5 <- function (sc_ref, st_vis, clust_vr, assay = "RNA", slot = "data",output_path = NULL,
                                cluster_markers = NULL,min.pct = 0.2,logfc.threshold = 0.25,min.diff.pct = 0.1,
                                normalize = 'uv',downsample_n = 1 , n_cluster = 100,n_top = NULL,
                                remove.RPL=F,remove.MT=F,weight.strategy='ent',
