@@ -3,6 +3,7 @@
 export(CalculateEntropy)
 export(UCASpatial_HD_deconv)
 export(UCASpatial_deconv)
+export(UCASpatial_deconv_Seuratv5)
 export(dot_plot_profiles_fun)
 export(new_simulate)
 export(spatial_scatterpie)
