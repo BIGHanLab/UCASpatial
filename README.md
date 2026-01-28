@@ -46,11 +46,15 @@ UCASpatial_result <- UCASpatial_HD_deconv(
       clust_vr = clust_vr)
 ```
 
+## Reference diagnosis tool
+To systematically assess the quality and specificity of the scRNA-seq reference before deconvolution, and to address potential biases arising from dissociation or cell type definition, we implemented a reference diagnosis tool within the UCASpatial framework. This tool evaluates whether the user-provided reference cell subpopulations possess distinct, recoverable transcriptional features under the algorithm's feature extraction mechanism.
 ```R
 # Evaluation
 p <- dot_plot_profiles_fun(UCASpatial_result[[1]][[1]]@h,UCASpatial_result[[1]][[2]])[2]
 p
 ```
+
+## Deconvolution results visualization in R
 ```R
 # Visualization
 decon_matr <- as.matrix(UCASpatial_result[[2]])[,1:(ncol(UCASpatial_result[[2]])-1)]
