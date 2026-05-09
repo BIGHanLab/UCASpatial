@@ -5,6 +5,7 @@
 #' @param sc_ref reference single cell RNA-seq data: Seurat object
 #' @param st_vis spatial transcriptomic data: Seurat object
 #' @param clust_vr colname of the meta.data in sc_ref which include the cluster information
+#' @param spatial.assay optional: set the default spatial.assay for st.vis. By default is 'Spatial'.
 #' @param assay optional: set the default assay for sc_ref. By default is 'RNA'.
 #' @param slot optional: set the default slot for sc_ref. By default is 'counts'.
 #' @param output_path optional: set the output path for the intermediate files. If is NULL, it will use current path by 'getwd()' function. By default is 'NULL'.
@@ -42,7 +43,8 @@
 #' @export
 
 
-UCASpatial_deconv_newly <- function (sc_ref, st_vis, clust_vr, assay = "RNA", slot = "data",output_path = NULL,
+UCASpatial_deconv_newly <- function (sc_ref, st_vis, clust_vr,spatial.assay='Spatial',
+                                     assay = "RNA", slot = "data",output_path = NULL,
                                cluster_markers = NULL,min.pct = 0.2,logfc.threshold = 0.25,min.diff.pct = 0.1,
                                normalize = 'uv',downsample_n = 1 , n_cluster = 100,n_top = NULL,
                                remove.RPL=F,remove.MT=F,weight.strategy='ent',
@@ -89,15 +91,20 @@ UCASpatial_deconv_newly <- function (sc_ref, st_vis, clust_vr, assay = "RNA", sl
       min_cont <- 0.01
     }
   }
-  cat("...........\nLoad the spatial expression matrix (row counts):st_vis@assays$Spatial@layers$counts\n")
-  st_vis_matr <- st_vis@assays$Spatial@layers$counts
+  cat(paste0("...........\nLoad the spatial expression matrix (row counts):st_vis@assays$",
+             spatial.assay,"@layers[[\"counts\"]\n"))
+  st_vis_matr <- st_vis@assays[[spatial.assay]]@layers[["counts"]]
+  if(!is.null(rowname_st_vis))
+  {
+    rownames(st_vis_matr) <- rowname_st_vis
+  }
   if(remove.RPL)
   {
     cat("...........\nFilter Ribosome genes\n")
     ribosome_genes <- grep("^RPL|^RPS", rownames(st_vis), value = TRUE)
     st_vis_filtered <- st_vis[!rownames(st_vis) %in% ribosome_genes,]
     st_vis <- st_vis_filtered
-    st_vis_matr <- st_vis@assays$Spatial@layers$counts
+    st_vis_matr <- st_vis@assays[[spatial.assay]]@layers[["counts"]]
   }
   if(remove.MT)
   {
@@ -105,9 +112,9 @@ UCASpatial_deconv_newly <- function (sc_ref, st_vis, clust_vr, assay = "RNA", sl
     mitochondrial_genes <- grep("^MT-", rownames(st_vis), value = TRUE)
     st_vis_filtered <- st_vis[!rownames(st_vis) %in% mitochondrial_genes, ]
     st_vis <- st_vis_filtered
-    st_vis_matr <- st_vis@assays$Spatial@layers$counts
+    st_vis_matr <- st_vis@assays[[spatial.assay]]@layers[["counts"]]
   }
-  rownames(st_vis_matr) <- rownames(st_vis)
+
   DefaultAssay(sc_ref) <- assay
   #### Step0: Preprocess the sc_ref data. ####
   cat("Step0    Preprocess the sc_ref data.....................\n")
