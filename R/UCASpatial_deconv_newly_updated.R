@@ -20,6 +20,7 @@
 #' @param min_cont optional: set the cutoff threshold. By default is '0.01'.
 #' @param remove.RPL whether remove the RPL-related genes. By default is 'FALSE'.
 #' @param remove.MT whether remove the MT-related genes. By default is 'FALSE'.
+#' @param rowname_st_vis optional: provide a vector including the row names of st.vis.
 #' @param cos.filter optional: whether use the cosg methods to filter some features. By default is 'TRUE'.
 #' @param cos.mu optional: parameter for cosg.
 #' @param cos.n_genes_user optional: parameter for cosg.
@@ -47,7 +48,7 @@ UCASpatial_deconv_newly <- function (sc_ref, st_vis, clust_vr,spatial.assay='Spa
                                      assay = "RNA", slot = "data",output_path = NULL,
                                cluster_markers = NULL,min.pct = 0.2,logfc.threshold = 0.25,min.diff.pct = 0.1,
                                normalize = 'uv',downsample_n = 1 , n_cluster = 100,n_top = NULL,
-                               remove.RPL=F,remove.MT=F,weight.strategy='ent',
+                               remove.RPL=F,remove.MT=F,weight.strategy='ent',rowname_st_vis=NULL,
                                cos.filter = T,cos.mu=1,cos.n_genes_user=900,marker.slot = 'data',
                                min_cont = 0.01,unit = "log2",random.seed = 10000,meta.filter = T,nmf.tol=1e-04,
                                meta.assay = 'integrated',meta.ndims = 30,meta.resolution = 100,meta.purity = 0.95,
