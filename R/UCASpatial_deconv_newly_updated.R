@@ -809,7 +809,7 @@ prep_seobj_topic_fun <- function (sc_ref)
     stop("ERROR: sc_ref must be a Seurat object!")
   suppressMessages(require(Seurat))
   suppressMessages(require(Matrix))
-  count_mtrx <- t(as.matrix(sc_ref@assays$RNA@counts))
+  count_mtrx <- Seurat::GetAssayData(object = sc_ref, layer = 'counts', assay = 'RNA') %>% as.matrix() %>% t()
   count_mtrx <- Matrix::Matrix(count_mtrx, sparse = T)
   return(count_mtrx)
 }
