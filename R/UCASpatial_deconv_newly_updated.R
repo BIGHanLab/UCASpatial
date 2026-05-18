@@ -99,6 +99,10 @@ UCASpatial_deconv_newly <- function (sc_ref, st_vis, clust_vr,spatial.assay='Spa
   {
     rownames(st_vis_matr) <- rowname_st_vis
   }
+  else
+  {
+    rownames(st_vis_matr) <- rownames(st_vis)
+  }
   if(remove.RPL)
   {
     cat("...........\nFilter Ribosome genes\n")
