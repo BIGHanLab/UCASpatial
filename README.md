@@ -45,6 +45,32 @@ UCASpatial_result <- UCASpatial_HD_deconv(
       rowname_st_vis = rowname_st_vis,
       clust_vr = clust_vr)
 ```
+For cell-segmented Visium HD data, we also recommend using UCASpatial for cell-type annotation rather than deconvolution. When each spatial unit corresponds to an individual segmented cell, the cell type with the highest predicted proportion (top-1) can be directly assigned as the label of that cell.
+
+This strategy will provide a fast and effective alternative to fully manual annotation, particularly for Visium HD datasets with relatively low sequencing depth.
+
+It can also help resolve rare or ambiguous cell populations that are difficult to distinguish by manual annotation alone.
+
+```R
+# Extract and normalize predicted cell-type proportions
+decon_matr <- as.matrix(UCASpatial_result[[2]])[
+    , 1:(ncol(UCASpatial_result[[2]]) - 1)
+]
+decon_matr <- decon_matr / rowSums(decon_matr)
+rownames(decon_matr) <- colnames(st_vis)
+
+# Assign the top-1 predicted cell type to each segmented cell
+UCASpatial_celltype <- colnames(decon_matr)[
+    max.col(decon_matr, ties.method = "first")
+]
+
+# Add annotations back to the Seurat object
+st_vis$UCASpatial_celltype <- UCASpatial_celltype
+st_vis$UCASpatial_max_prop <- apply(decon_matr, 1, max)
+```
+
+The maximum predicted proportion (UCASpatial_max_prop) can also be retained as a simple confidence indicator to assist downstream inspection of ambiguous cells.
+
 
 ## Reference diagnosis tool
 To systematically assess the quality and specificity of the scRNA-seq reference before deconvolution, and to address potential biases arising from dissociation or cell type definition, we implemented a reference diagnosis tool within the UCASpatial framework. This tool evaluates whether the user-provided reference cell subpopulations possess distinct, recoverable transcriptional features under the algorithm's feature extraction mechanism.
