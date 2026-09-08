@@ -138,6 +138,6 @@ All feedback, bug reports, and suggestions are warmly welcomed! Please make sure
 You may also contact us directly: XU Yin (xuy@big.ac.cn); HAN Dali (handl@big.ac.cn).
 
 ## How to cite UCASpatial
-Xu, Y. et al. Ultra-resolution Deconvolution of Spatial Transcriptomics Unveils Spatiotemporal Cellular Dynamics in Complex Microenvironments. bioRxiv, 2024.2007.2005.602200 (2024).
+Xu, Y., Huang, Z., Zhang, Y. et al. Ultra-precision deconvolution of spatial transcriptomics decodes immune heterogeneity and fate-defining programs in tissues. Nat Commun 17, 4269 (2026). https://doi.org/10.1038/s41467-026-70645-3
 
 
